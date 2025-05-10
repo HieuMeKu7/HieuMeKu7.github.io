@@ -28,7 +28,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            transition: background-color 0.3s; /* For smooth theme transitions if body bg changes */
+            transition: background-color 0.3s; 
         }
         /* Default Theme (Blue) */
         .chat-header {
@@ -67,18 +67,17 @@
 
         /* Pink Rose Theme */
         .chat-container.theme-rose .chat-header {
-            background-color: #E91E63; /* Rose Pink for header */
+            background-color: #E91E63; 
         }
         .chat-container.theme-rose .message-bubble.hieu {
-            background-color: #D81B60; /* Deeper Rose for Hiếu's messages */
+            background-color: #D81B60; 
         }
         .chat-container.theme-rose .hieu-button {
-            background-color: #C2185B; /* Darker Rose for Hiếu's buttons */
+            background-color: #C2185B; 
         }
         .chat-container.theme-rose .hieu-button:hover:not(:disabled) {
             background-color: #AD1457;
         }
-
 
         .chat-messages {
             flex-grow: 1;
@@ -134,7 +133,7 @@
         .message-row.other-speaker .message-details {
             align-items: flex-start;
         }
-        .message-bubble { /* General bubble styling */
+        .message-bubble { 
             padding: 8px 12px;
             border-radius: 18px;
             word-wrap: break-word;
@@ -142,7 +141,7 @@
             line-height: 1.4;
             position: relative;
         }
-        .message-bubble.man, .message-bubble.tiem-cuon-len { /* Mẫn and Tiệm's incoming messages */
+        .message-bubble.man, .message-bubble.tiem-cuon-len { 
             background-color: #e4e6eb;
             color: #050505;
             border-top-left-radius: 4px;
@@ -160,12 +159,38 @@
         .message-text {
             margin: 0;
         }
-        .message-bubble img, .message-bubble video {
+        .message-bubble img { /* For regular images */
             max-width: 100%;
             border-radius: 10px;
             margin-top: 5px;
             display: block;
         }
+        /* Video container for responsive iframe */
+        .video-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            margin-top: 8px;
+            border-radius: 10px; /* Match image radius */
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            border: none; 
+        }
+        .video-note {
+            font-size: 0.75em;
+            opacity: 0.7;
+            margin-top: 4px;
+            text-align: left; /* Align note with bubble content */
+        }
+
         .message-bubble a {
             color: inherit;
             text-decoration: underline;
@@ -237,7 +262,7 @@
             border-top: 1px solid #ddd;
             flex-shrink: 0;
         }
-        .nav-button { /* Next Scene button */
+        .nav-button { 
             background-color: #42b72a; 
             color: white;
             border: none;
@@ -255,20 +280,16 @@
         .nav-button:hover:not(:disabled) {
             opacity: 0.9;
         }
-
     </style>
 </head>
 <body>
-
     <div class="chat-container" id="chatContainer">
         <div class="chat-header" id="chatHeader">Loading Chat...</div>
-        <div class="chat-messages" id="chatMessages">
-            </div>
-        <div class="hieu-actions" id="hieuActions">
-            </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="hieu-actions" id="hieuActions"></div>
         <div class="navigation-area" id="navigationArea">
             <button class="nav-button" id="nextSceneButton" style="display: none;">Next Scene</button>
-            </div>
+        </div>
     </div>
 
     <script>
@@ -394,7 +415,6 @@ Hiếu: Chúc mày luôn được như này: (stream video: https://www.youtube.
 Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.com/watch?v=np0hCOhh8WU)
         `;
 
-        // --- Configuration for Delays (in milliseconds) ---
         const TYPING_DURATION = 1200; 
         const MESSAGE_CONTINUOUS_DELAY = 700; 
         const HIEU_POST_MESSAGE_DELAY = 500; 
@@ -402,13 +422,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
 
         function slugify(text) {
             if (typeof text !== 'string') return '';
-            return text.toString().toLowerCase()
-                .normalize('NFKD')
-                .replace(/\s+/g, '-')
-                .replace(/[^\w-]+/g, '')
-                .replace(/--+/g, '-')
-                .replace(/^-+/, '')
-                .replace(/-+$/, '');
+            return text.toString().toLowerCase().normalize('NFKD').replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
         }
 
         function parseScript(rawText) {
@@ -417,18 +431,14 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
             sceneBlocks.forEach((block, index) => {
                 const lines = block.trim().split('\n');
                 const titleLine = lines.shift();
-                let actualSceneNumber = `${index + 1}`;
-                let sceneDescriptionFromTitle = "";
-                let sceneSubTitle = null; 
+                let actualSceneNumber = `${index + 1}`, sceneDescriptionFromTitle = "", sceneSubTitle = null;
                 const sceneTitleMatch = titleLine.match(/^(\d+)\.\s*(.*)/);
                 if (sceneTitleMatch) {
                     actualSceneNumber = sceneTitleMatch[1];
                     sceneDescriptionFromTitle = sceneTitleMatch[2] ? sceneTitleMatch[2].trim() : "";
                 }
                 const sceneDataTitle = `Scene ${actualSceneNumber}`;
-                if (actualSceneNumber === "6" && sceneDescriptionFromTitle.toLowerCase().includes("2 tháng sau")) {
-                     sceneSubTitle = `(${sceneDescriptionFromTitle})`;
-                }
+                if (actualSceneNumber === "6" && sceneDescriptionFromTitle.toLowerCase().includes("2 tháng sau")) sceneSubTitle = `(${sceneDescriptionFromTitle})`;
                 const messages = [];
                 let sceneHasTiemCuonLen = false;
                 lines.forEach(line => {
@@ -447,20 +457,14 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
                         }
                     }
                     if (line.includes("*Mẫn đã đổi hình đại diện của cô ấy* (note: image 30092024)") && sceneDataTitle.includes("Scene 15")) {
-                        speaker = "System"; text = "*Mẫn đã đổi hình đại diện của cô ấy*";
-                        image = `images/30092024.jpg`; isAvatarChangeMessage = true;
+                        speaker = "System"; text = "*Mẫn đã đổi hình đại diện của cô ấy*"; image = `images/30092024.jpg`; isAvatarChangeMessage = true;
                     } else if (line.includes("Hiếu đã đổi biệt danh của Mẫn thành nữ thần Momo")) {
                         speaker = "System"; text = line; isNicknameChangeMessage = true;
                         const nicknameMatch = text.match(/thành (.*)/);
                         if (nicknameMatch && nicknameMatch[1]) newNickname = nicknameMatch[1].trim();
                     }
-                    if (speaker === "System" && !speakerMatch) { 
-                        if ( (line.startsWith("*") && line.endsWith("*")) || 
-                             line.startsWith("Mẫn chỉ seen") || line.match(/^\d+ năm sau/) ||
-                             line.match(/^\*\d+ tiếng sau\*/) || line.startsWith("*Trong group") ||
-                             line.startsWith("*Mẫn thả tim*") || line.startsWith("*Mẫn seen và im lặng không rep*") ) {
-                            text = line; 
-                        }
+                    if (speaker === "System" && !speakerMatch) {
+                        if ((line.startsWith("*") && line.endsWith("*")) || line.startsWith("Mẫn chỉ seen") || line.match(/^\d+ năm sau/) || line.match(/^\*\d+ tiếng sau\*/) || line.startsWith("*Trong group") || line.startsWith("*Mẫn thả tim*") || line.startsWith("*Mẫn seen và im lặng không rep*")) text = line;
                     }
                     const imageRegex = /\((?:add image|note: image)\s*:?\s*(.*?)\)/i;
                     const imageMatchCurrentText = text.match(imageRegex);
@@ -468,11 +472,11 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
                         image = `images/${imageMatchCurrentText[1].trim().replace(/\s+/g, '_')}.jpg`;
                         text = text.replace(imageRegex, "").trim();
                     }
-                    const videoRegex = /\((?:stream video|stream VIDEO):\s*(.*?)\)/i;
+                    const videoRegex = /\((?:stream video|stream VIDEO):\s*(.*?)\)/i; // This will capture the URL for video
                     const videoMatchCurrentText = text.match(videoRegex);
                     if (videoMatchCurrentText) {
-                        video = videoMatchCurrentText[1].trim();
-                        text = text.replace(videoRegex, "").trim();
+                        video = videoMatchCurrentText[1].trim(); // Store the URL in the 'video' property
+                        text = text.replace(videoRegex, "").trim(); // Remove the tag from text
                     }
                     if (!text && (image || video) && speaker !== "System") text = "";
                     if (text || image || video || isAvatarChangeMessage || isNicknameChangeMessage || (speaker === "System" && line.trim() !== "")) {
@@ -485,285 +489,180 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
         }
         
         const scriptData = parseScript(rawScriptText);
-        let currentSceneIndex = 0;
-        let currentMessageInScene = 0;
+        let currentSceneIndex = 0, currentMessageInScene = 0, manAvatarCurrent = "images/HueMan.jpg", manNicknameGlobal = "Mẫn";
         let hieuMessageQueue = [];
-        let manAvatarCurrent = "images/HueMan.jpg";
-        let manNicknameGlobal = "Mẫn";
-        const MAN_AVATAR_DEFAULT = "images/HueMan.jpg";
-        const MAN_AVATAR_SCENE15 = "images/30092024.jpg";
-
-        const chatContainer = document.getElementById('chatContainer'); // Get chat container for theme class
-        const chatHeaderDiv = document.getElementById('chatHeader');
-        const chatMessagesDiv = document.getElementById('chatMessages');
-        const hieuActionsDiv = document.getElementById('hieuActions');
+        const MAN_AVATAR_DEFAULT = "images/HueMan.jpg", MAN_AVATAR_SCENE15 = "images/30092024.jpg";
+        const chatContainer = document.getElementById('chatContainer'), chatHeaderDiv = document.getElementById('chatHeader');
+        const chatMessagesDiv = document.getElementById('chatMessages'), hieuActionsDiv = document.getElementById('hieuActions');
         const nextSceneButton = document.getElementById('nextSceneButton');
-
-        nextSceneButton.onclick = () => {
-            if (currentSceneIndex < scriptData.length - 1) {
-                loadScene(currentSceneIndex + 1);
-            }
-        };
+        nextSceneButton.onclick = () => { if (currentSceneIndex < scriptData.length - 1) loadScene(currentSceneIndex + 1); };
 
         function getAvatar(speaker) {
-            const lowerSpeaker = getDisplayName(speaker).toLowerCase(); 
             if (speaker.toLowerCase() === 'hiếu') return 'images/Hieu.jpg';
-            if (speaker.toLowerCase() === 'mẫn') return manAvatarCurrent; 
+            if (speaker.toLowerCase() === 'mẫn') return manAvatarCurrent;
             if (speaker.toLowerCase() === 'tiệm cuộn len') return 'images/shop.jpg';
             return `https://placehold.co/40x40/CCC/777?text=${speaker.charAt(0).toUpperCase()}`;
         }
-        
-        function getDisplayName(speaker) {
-            if (speaker.toLowerCase() === 'mẫn') return manNicknameGlobal;
-            return speaker;
-        }
+        function getDisplayName(speaker) { return speaker.toLowerCase() === 'mẫn' ? manNicknameGlobal : speaker; }
 
         function showTypingIndicator(speaker) {
-            hideTypingIndicator(); 
-            const speakerDisplayName = getDisplayName(speaker);
-            const avatarSrc = getAvatar(speaker);
-            const indicatorHTML = `
-                <div class="message-row other-speaker typing-indicator-row" id="typingIndicatorActive">
-                    <div class="message-content-wrapper">
-                        <img src="${avatarSrc}" alt="${speakerDisplayName} typing" class="avatar" onerror="this.src='https://placehold.co/40x40/CCC/777?text=${speakerDisplayName.charAt(0).toUpperCase()}'">
-                        <div class="message-details">
-                             <div class="speaker-name">${speakerDisplayName}</div>
-                            <div class="message-bubble typing-indicator-bubble">
-                                <span></span><span></span><span></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
+            hideTypingIndicator();
+            const speakerDisplayName = getDisplayName(speaker), avatarSrc = getAvatar(speaker);
+            const indicatorHTML = `<div class="message-row other-speaker typing-indicator-row" id="typingIndicatorActive"><div class="message-content-wrapper"><img src="${avatarSrc}" alt="${speakerDisplayName} typing" class="avatar" onerror="this.src='https://placehold.co/40x40/CCC/777?text=${speakerDisplayName.charAt(0).toUpperCase()}'"><div class="message-details"><div class="speaker-name">${speakerDisplayName}</div><div class="message-bubble typing-indicator-bubble"><span></span><span></span><span></span></div></div></div></div>`;
             chatMessagesDiv.insertAdjacentHTML('beforeend', indicatorHTML);
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
         }
-
-        function hideTypingIndicator() {
-            const indicator = document.getElementById('typingIndicatorActive');
-            if (indicator) {
-                indicator.remove();
-            }
-        }
+        function hideTypingIndicator() { const indicator = document.getElementById('typingIndicatorActive'); if (indicator) indicator.remove(); }
 
         function displayMessage(msgData) {
             const { speaker, text, image, video, isAvatarChangeMessage, isNicknameChangeMessage, newNickname } = msgData;
-
             if (isNicknameChangeMessage && newNickname) {
                 manNicknameGlobal = newNickname;
-                const currentSceneData = scriptData[currentSceneIndex];
-                if (currentSceneData && !currentSceneData.sceneHasTiemCuonLen) { 
-                     chatHeaderDiv.textContent = manNicknameGlobal + (currentSceneData.sceneSubTitle ? ` ${currentSceneData.sceneSubTitle}` : "");
-                }
+                const scene = scriptData[currentSceneIndex];
+                if (scene && !scene.sceneHasTiemCuonLen) chatHeaderDiv.textContent = manNicknameGlobal + (scene.sceneSubTitle ? ` ${scene.sceneSubTitle}` : "");
             }
-
-            const messageRow = document.createElement('div');
-            messageRow.classList.add('message-row');
-            const messageBubble = document.createElement('div');
-            messageBubble.classList.add('message-bubble');
-            const messageTextDiv = document.createElement('p');
-            messageTextDiv.classList.add('message-text');
+            const messageRow = document.createElement('div'); messageRow.classList.add('message-row');
+            const messageBubble = document.createElement('div'); messageBubble.classList.add('message-bubble');
+            const messageTextDiv = document.createElement('p'); messageTextDiv.classList.add('message-text');
             messageTextDiv.innerHTML = DOMPurify.sanitize(text.replace(/\*(.*?)\*/g, '<em>$1</em>'));
             messageBubble.appendChild(messageTextDiv);
 
             if (image) {
-                const imgElement = document.createElement('img');
-                imgElement.src = image;
+                const imgElement = document.createElement('img'); imgElement.src = image;
                 imgElement.alt = image.split('/').pop().split('.')[0] || 'Chat image';
                 imgElement.onerror = function() { this.src = `https://placehold.co/300x200/EEE/333?text=Error+${encodeURIComponent(imgElement.alt)}`; this.onerror=null; };
                 messageBubble.appendChild(imgElement);
             }
-            if (video) {
-                const videoElement = document.createElement('video');
-                videoElement.src = video; videoElement.autoplay = true; videoElement.muted = true;
-                videoElement.controls = true; videoElement.width = "100%";
-                messageBubble.appendChild(videoElement);
+            if (video) { // 'video' now holds the URL for iframe
+                const videoContainer = document.createElement('div');
+                videoContainer.classList.add('video-container');
+                const iframeElement = document.createElement('iframe');
+                iframeElement.src = video; // Use the URL from script
+                iframeElement.title = "YouTube video player"; // Generic title
+                iframeElement.frameBorder = "0";
+                iframeElement.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+                iframeElement.referrerPolicy = "strict-origin-when-cross-origin";
+                iframeElement.allowFullscreen = true;
+                videoContainer.appendChild(iframeElement);
+                messageBubble.appendChild(videoContainer);
+
                 const videoNote = document.createElement('p');
-                videoNote.style.fontSize = "0.75em"; videoNote.style.opacity = "0.7";
+                videoNote.classList.add('video-note');
                 videoNote.textContent = "(Video playback depends on browser support for the source URL format.)";
-                if (video.includes("googleusercontent.com/youtube")) { 
+                if (video.includes("googleusercontent.com/youtube")) {
                     videoNote.textContent = "(Note: YouTube links in this format may not play directly. Standard YouTube embed URLs are different.)";
                 }
                 messageBubble.appendChild(videoNote);
             }
 
             if (speaker.toLowerCase() === 'system') {
-                messageBubble.classList.add('system');
-                messageRow.style.justifyContent = 'center';
+                messageBubble.classList.add('system'); messageRow.style.justifyContent = 'center';
                 messageRow.appendChild(messageBubble);
             } else {
                 messageRow.classList.add(slugify(speaker) + '-speaker');
                 if (slugify(speaker) !== 'hieu') messageRow.classList.add('other-speaker');
-                const contentWrapper = document.createElement('div');
-                contentWrapper.classList.add('message-content-wrapper');
-                const avatarImg = document.createElement('img');
-                avatarImg.classList.add('avatar');
-                avatarImg.src = getAvatar(speaker);
-                avatarImg.alt = getDisplayName(speaker) + ' avatar';
+                const contentWrapper = document.createElement('div'); contentWrapper.classList.add('message-content-wrapper');
+                const avatarImg = document.createElement('img'); avatarImg.classList.add('avatar');
+                avatarImg.src = getAvatar(speaker); avatarImg.alt = getDisplayName(speaker) + ' avatar';
                 avatarImg.onerror = function() { this.src = `https://placehold.co/40x40/CCC/777?text=${getDisplayName(speaker).charAt(0).toUpperCase()}`; this.onerror=null;};
-                const messageDetailsDiv = document.createElement('div');
-                messageDetailsDiv.classList.add('message-details');
+                const messageDetailsDiv = document.createElement('div'); messageDetailsDiv.classList.add('message-details');
                 if (speaker.toLowerCase() !== 'hiếu') {
-                    const speakerNameDiv = document.createElement('div');
-                    speakerNameDiv.classList.add('speaker-name');
-                    speakerNameDiv.textContent = getDisplayName(speaker);
-                    messageDetailsDiv.appendChild(speakerNameDiv);
+                    const speakerNameDiv = document.createElement('div'); speakerNameDiv.classList.add('speaker-name');
+                    speakerNameDiv.textContent = getDisplayName(speaker); messageDetailsDiv.appendChild(speakerNameDiv);
                 }
-                messageBubble.classList.add(slugify(speaker));
-                messageDetailsDiv.appendChild(messageBubble);
-                contentWrapper.appendChild(avatarImg);
-                contentWrapper.appendChild(messageDetailsDiv);
+                messageBubble.classList.add(slugify(speaker)); messageDetailsDiv.appendChild(messageBubble);
+                contentWrapper.appendChild(avatarImg); contentWrapper.appendChild(messageDetailsDiv);
                 messageRow.appendChild(contentWrapper);
             }
             chatMessagesDiv.appendChild(messageRow);
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-            if (isAvatarChangeMessage && scriptData[currentSceneIndex] && scriptData[currentSceneIndex].title.includes("Scene 15")) {
-                manAvatarCurrent = MAN_AVATAR_SCENE15;
-            }
+            if (isAvatarChangeMessage && scriptData[currentSceneIndex] && scriptData[currentSceneIndex].title.includes("Scene 15")) manAvatarCurrent = MAN_AVATAR_SCENE15;
         }
 
         function updateNextSceneButtonVisibility() {
-            if (currentSceneIndex < scriptData.length - 1) {
-                nextSceneButton.style.display = 'block';
-                nextSceneButton.disabled = false;
-            } else {
-                nextSceneButton.style.display = 'none';
-            }
+            if (currentSceneIndex < scriptData.length - 1) { nextSceneButton.style.display = 'block'; nextSceneButton.disabled = false; }
+            else nextSceneButton.style.display = 'none';
         }
 
         function processNextMessage() {
             const scene = scriptData[currentSceneIndex];
-            if (!scene) {
-                chatHeaderDiv.textContent = "Error: End of script or scene not found.";
-                nextSceneButton.style.display = 'none';
-                return;
-            }
-
+            if (!scene) { chatHeaderDiv.textContent = "Error: End of script or scene not found."; nextSceneButton.style.display = 'none'; return; }
             if (currentMessageInScene >= scene.messages.length && hieuMessageQueue.length === 0) {
-                if (currentSceneIndex < scriptData.length - 1) {
-                    updateNextSceneButtonVisibility();
-                } else {
-                    chatHeaderDiv.textContent = "End of Script";
-                    hieuActionsDiv.innerHTML = '';
-                    nextSceneButton.style.display = 'none';
-                }
+                if (currentSceneIndex < scriptData.length - 1) updateNextSceneButtonVisibility();
+                else { chatHeaderDiv.textContent = "End of Script"; hieuActionsDiv.innerHTML = ''; nextSceneButton.style.display = 'none'; }
                 return;
             }
-
             if (currentMessageInScene < scene.messages.length) {
                 const messageData = scene.messages[currentMessageInScene];
                 if (messageData.speaker.toLowerCase() === 'hiếu') {
-                    while (currentMessageInScene < scene.messages.length &&
-                           scene.messages[currentMessageInScene].speaker.toLowerCase() === 'hiếu') {
-                        hieuMessageQueue.push(scene.messages[currentMessageInScene]);
-                        currentMessageInScene++;
+                    while (currentMessageInScene < scene.messages.length && scene.messages[currentMessageInScene].speaker.toLowerCase() === 'hiếu') {
+                        hieuMessageQueue.push(scene.messages[currentMessageInScene]); currentMessageInScene++;
                     }
-                    renderHieuButtons(); 
-                } else { 
+                    renderHieuButtons();
+                } else {
                     const isSystemMsg = messageData.speaker.toLowerCase() === 'system';
                     const delay = isSystemMsg ? SYSTEM_MESSAGE_DELAY : TYPING_DURATION;
                     if (!isSystemMsg) showTypingIndicator(messageData.speaker);
                     setTimeout(() => {
                         if (!isSystemMsg) hideTypingIndicator();
-                        displayMessage(messageData);
-                        currentMessageInScene++;
+                        displayMessage(messageData); currentMessageInScene++;
                         const nextMessagePeek = (currentMessageInScene < scene.messages.length) ? scene.messages[currentMessageInScene] : null;
-                        if (nextMessagePeek && nextMessagePeek.speaker === messageData.speaker && !isSystemMsg) {
-                            setTimeout(processNextMessage, MESSAGE_CONTINUOUS_DELAY);
-                        } else {
-                            processNextMessage();
-                        }
+                        if (nextMessagePeek && nextMessagePeek.speaker === messageData.speaker && !isSystemMsg) setTimeout(processNextMessage, MESSAGE_CONTINUOUS_DELAY);
+                        else processNextMessage();
                     }, delay);
                 }
-            } else if (hieuMessageQueue.length > 0) {
-                renderHieuButtons();
-            }
-            
-            if (currentMessageInScene >= scene.messages.length && hieuMessageQueue.length === 0) {
-                 updateNextSceneButtonVisibility();
-            } else {
-                nextSceneButton.style.display = 'none'; 
-            }
+            } else if (hieuMessageQueue.length > 0) renderHieuButtons();
+            if (currentMessageInScene >= scene.messages.length && hieuMessageQueue.length === 0) updateNextSceneButtonVisibility();
+            else nextSceneButton.style.display = 'none';
         }
         
         function renderHieuButtons() {
-            hieuActionsDiv.innerHTML = ''; 
-            nextSceneButton.style.display = 'none'; 
-
+            hieuActionsDiv.innerHTML = ''; nextSceneButton.style.display = 'none';
             if (hieuMessageQueue.length > 0) {
                 const hieuMsg = hieuMessageQueue[0];
-                const button = document.createElement('button');
-                button.classList.add('hieu-button');
+                const button = document.createElement('button'); button.classList.add('hieu-button');
                 let buttonContent = DOMPurify.sanitize(hieuMsg.text.replace(/\*(.*?)\*/g, '<em>$1</em>'));
                 if (hieuMsg.image) buttonContent += `<br><img src="${hieuMsg.image}" alt="image preview" style="max-height: 50px; border-radius: 4px; margin-top: 4px;" onerror="this.style.display='none'">`;
                 if (hieuMsg.video) buttonContent += `<br><span style="font-size:0.8em; color:#eee;">(Video included)</span>`;
                 button.innerHTML = buttonContent;
                 button.onclick = () => {
                     const allCurrentHieuButtons = hieuActionsDiv.querySelectorAll('.hieu-button');
-                    allCurrentHieuButtons.forEach(b => b.disabled = true); 
-                    displayMessage(hieuMsg);
-                    hieuMessageQueue.shift();
+                    allCurrentHieuButtons.forEach(b => b.disabled = true);
+                    displayMessage(hieuMsg); hieuMessageQueue.shift();
                     setTimeout(() => {
-                        if (hieuMessageQueue.length > 0) renderHieuButtons(); 
-                        else {
-                            hieuActionsDiv.innerHTML = ''; 
-                            processNextMessage(); 
-                        }
+                        if (hieuMessageQueue.length > 0) renderHieuButtons();
+                        else { hieuActionsDiv.innerHTML = ''; processNextMessage(); }
                     }, HIEU_POST_MESSAGE_DELAY);
                 };
                 hieuActionsDiv.appendChild(button);
-            } else {
-                processNextMessage();
-            }
+            } else processNextMessage();
         }
 
         function loadScene(sceneIndex) {
-            currentSceneIndex = sceneIndex;
-            currentMessageInScene = 0;
-            hieuMessageQueue = [];
-            manAvatarCurrent = MAN_AVATAR_DEFAULT; 
-            hideTypingIndicator(); 
-            nextSceneButton.style.display = 'none';
-            chatMessagesDiv.innerHTML = ''; 
-            hieuActionsDiv.innerHTML = ''; 
-
-            if (currentSceneIndex >= scriptData.length) { 
-                chatHeaderDiv.textContent = "End of Script";
-                chatContainer.classList.remove('theme-rose'); // Reset theme at end
-                return;
+            currentSceneIndex = sceneIndex; currentMessageInScene = 0; hieuMessageQueue = [];
+            manAvatarCurrent = MAN_AVATAR_DEFAULT; hideTypingIndicator(); nextSceneButton.style.display = 'none';
+            chatMessagesDiv.innerHTML = ''; hieuActionsDiv.innerHTML = '';
+            if (currentSceneIndex >= scriptData.length) {
+                chatHeaderDiv.textContent = "End of Script"; chatContainer.classList.remove('theme-rose'); return;
             }
-            
             const scene = scriptData[currentSceneIndex];
             let headerText = "";
-            if (scene.sceneHasTiemCuonLen) {
-                headerText = "Tiệm cuộn len";
-                chatContainer.classList.remove('theme-rose'); // Default theme for Tiệm cuộn len
-            } else {
-                headerText = manNicknameGlobal;
-                chatContainer.classList.add('theme-rose'); // Rose theme for Mẫn
-            }
-            if (scene.sceneSubTitle) { 
-                headerText += ` ${scene.sceneSubTitle}`;
-            }
+            if (scene.sceneHasTiemCuonLen) { headerText = "Tiệm cuộn len"; chatContainer.classList.remove('theme-rose'); }
+            else { headerText = manNicknameGlobal; chatContainer.classList.add('theme-rose'); }
+            if (scene.sceneSubTitle) headerText += ` ${scene.sceneSubTitle}`;
             chatHeaderDiv.textContent = headerText;
-            processNextMessage(); 
+            processNextMessage();
         }
         
         const purifyScript = document.createElement('script');
         purifyScript.src = "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js";
-        purifyScript.onload = () => {
-            console.log("DOMPurify loaded successfully.");
-            loadScene(0);
-        };
+        purifyScript.onload = () => { console.log("DOMPurify loaded successfully."); loadScene(0); };
         purifyScript.onerror = () => {
             console.error("DOMPurify could not be loaded. HTML content might not be sanitized.");
             if (typeof DOMPurify === 'undefined') {
-                window.DOMPurify = { 
-                    sanitize: function(html) {
-                        console.warn("Using basic fallback for DOMPurify.sanitize. XSS protection is minimal.");
-                        if (typeof html !== 'string') return '';
-                        return html.replace(/</g, "<").replace(/>/g, ">"); 
-                    }
-                };
+                window.DOMPurify = { sanitize: function(html) {
+                    console.warn("Using basic fallback for DOMPurify.sanitize. XSS protection is minimal.");
+                    if (typeof html !== 'string') return ''; return html.replace(/</g, "<").replace(/>/g, ">"); }};
             }
             loadScene(0);
         };
