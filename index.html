@@ -16,6 +16,7 @@
             justify-content: center;
             min-height: 100vh;
             color: #050505;
+            touch-action: none; /* Prevent default touch actions like scrolling during drag */
         }
         .chat-container {
             width: 95%;
@@ -284,56 +285,89 @@
             flex-grow: 1; 
             display: flex;
             flex-direction: column;
-            justify-content: center; 
-            overflow-y: auto; 
+            justify-content: space-around; /* Distribute space for bow tie and targets */
+            overflow: hidden; /* Prevent scrollbars from fleeing elements */
+            position: relative; /* For absolute positioning of bow tie */
         }
         #quizQuestion {
             font-size: 1.5em;
-            margin-bottom: 25px;
+            margin-bottom: 20px; /* Reduced margin */
             color: #333;
         }
-        #quizChoices {
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 15px; 
+        #bowTieContainer { /* Area for the bow tie to start and return */
+            height: 60px; /* Adjust as needed */
             margin-bottom: 20px;
-            position: relative; 
-            min-height: 150px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .quiz-choice-button {
-            background-color: #007bff; 
+        #bowTie {
+            width: 50px;
+            height: 30px;
+            background-color: #ff69b4; /* Hot pink bow tie */
+            border: 2px solid #c71585;
+            border-radius: 5px; /* Simple bow tie shape */
+            cursor: grab;
+            position: relative; /* Will be changed to absolute when dragging */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8em;
             color: white;
-            border: none;
-            padding: 12px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.2s, transform 0.1s ease-out; 
-            position: relative; /* Default: in the grid flow */
-            z-index: 1;
+            user-select: none; /* Prevent text selection when dragging */
         }
-        .chat-container.theme-rose #quizContainer .quiz-choice-button {
-             background-color: #C2185B; 
+        #bowTie:before, #bowTie:after { /* Simple bow tie "wings" */
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 40px;
+            background-color: #ff69b4;
+            border: 2px solid #c71585;
+            border-radius: 5px 15px 15px 5px;
         }
-        .chat-container.theme-rose #quizContainer .quiz-choice-button:hover:not(:disabled) {
-             background-color: #AD1457;
-             transform: translateY(-1px);
-        }
-         .chat-container:not(.theme-rose) #quizContainer .quiz-choice-button:hover:not(:disabled) {
-             background-color: #0056b3; 
-             transform: translateY(-1px);
-        }
-        .quiz-choice-button:active:not(:disabled) {
-            transform: translateY(0px);
+        #bowTie:before { left: -15px; transform: rotate(-15deg); }
+        #bowTie:after { right: -15px; transform: rotate(15deg); }
+
+        #bowTie.dragging {
+            cursor: grabbing;
+            z-index: 1000; /* Ensure bow tie is on top when dragging */
+            opacity: 0.8;
         }
 
-        .quiz-choice-button.teleported { 
-            background-color: #dc3545 !important; 
-            position: absolute !important; 
-            z-index: 10; 
+        #answerTargetsContainer {
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 20px; /* Increased gap for better target separation */
+            position: relative; /* For positioning answer targets if they move */
+            padding: 10px;
         }
-         .quiz-choice-button.correct {
-            background-color: #28a745 !important; 
+        .answer-target {
+            background-color: #007bff; 
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            min-height: 50px; /* Ensure targets have some height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s, transform 0.2s ease-out; /* For correct/fleeing visual feedback */
+            position: relative; /* For managing position if fleeing */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .answer-target.correct-answer-hover { /* Visual feedback when bow tie hovers correct answer */
+            background-color: #28a745 !important; /* Green */
+            transform: scale(1.05);
+        }
+         .answer-target.fleeing {
+            /* Optional: visual cue for fleeing, e.g., slight wobble or color change */
+            /* background-color: #ffc107; /* Yellow to indicate it's aware */
+        }
+        .chat-container.theme-rose #answerTargetsContainer .answer-target {
+             background-color: #C2185B; 
+        }
+        .chat-container.theme-rose #answerTargetsContainer .answer-target.correct-answer-hover {
+             background-color: #AD1457;
         }
         
         #quizFeedback {
@@ -354,65 +388,31 @@
 
         /* Responsive Adjustments */
         @media (max-width: 600px) {
-            .chat-header {
-                font-size: 1em;
-                padding: 8px 12px;
-            }
-            .header-avatar {
-                width: 30px;
-                height: 30px;
-                margin-right: 8px;
-            }
-            .message-bubble {
-                font-size: 0.9em;
-                padding: 7px 10px;
-            }
-            .avatar { 
-                width: 28px;
-                height: 28px;
-            }
-            .hieu-button, .quiz-choice-button {
-                font-size: 0.9em;
-                padding: 9px 12px;
-            }
-            .nav-button {
-                font-size: 0.85em;
-                padding: 8px 15px;
-            }
-            #quizQuestion {
-                font-size: 1.3em;
-                margin-bottom: 20px;
-            }
-            #quizChoices {
-                grid-template-columns: 1fr; 
-                gap: 10px;
-                min-height: 200px; 
-            }
-            #quizFeedback {
-                font-size: 1.1em;
-            }
-            #quizCompletionMessage {
-                font-size: 1.4em;
-            }
-            .message-content-wrapper {
-                max-width: 85%; 
-            }
+            .chat-header { font-size: 1em; padding: 8px 12px; }
+            .header-avatar { width: 30px; height: 30px; margin-right: 8px; }
+            .message-bubble { font-size: 0.9em; padding: 7px 10px; }
+            .avatar { width: 28px; height: 28px; }
+            .hieu-button { font-size: 0.9em; padding: 9px 12px; }
+            .nav-button { font-size: 0.85em; padding: 8px 15px; }
+            #quizQuestion { font-size: 1.3em; margin-bottom: 15px; }
+            #bowTieContainer { height: 50px; margin-bottom: 15px; }
+            #bowTie { width: 40px; height: 25px; }
+            #bowTie:before, #bowTie:after { width: 15px; height: 30px; }
+            #bowTie:before { left: -12px; }
+            #bowTie:after { right: -12px; }
+            #answerTargetsContainer { grid-template-columns: 1fr; gap: 10px; }
+            .answer-target { font-size: 0.85em; padding: 12px; }
+            #quizFeedback { font-size: 1.1em; }
+            #quizCompletionMessage { font-size: 1.4em; }
+            .message-content-wrapper { max-width: 85%; }
         }
          @media (max-width: 400px) {
-            .chat-header {
-                font-size: 0.9em;
-            }
-             .message-bubble {
-                font-size: 0.85em;
-            }
-            .hieu-button, .quiz-choice-button, .nav-button {
-                font-size: 0.8em;
-            }
-             #quizQuestion {
-                font-size: 1.1em;
-            }
+            .chat-header { font-size: 0.9em; }
+            .message-bubble { font-size: 0.85em; }
+            .hieu-button, .nav-button { font-size: 0.8em; }
+            .answer-target { font-size: 0.8em; }
+            #quizQuestion { font-size: 1.1em; }
         }
-
     </style>
 </head>
 <body>
@@ -428,7 +428,12 @@
         </div>
         <div id="quizContainer" style="display: none;" aria-hidden="true" role="region" aria-label="Phần đố vui">
             <h2 id="quizQuestion"></h2>
-            <div id="quizChoices" role="grid" aria-labelledby="quizQuestion"></div>
+            <div id="bowTieContainer">
+                <div id="bowTie" role="button" aria-grabbed="false" tabindex="0" aria-label="Kéo chiếc nơ này">Nơ</div>
+            </div>
+            <div id="answerTargetsContainer" role="listbox" aria-labelledby="quizQuestion">
+                {/* Các mục tiêu trả lời sẽ được tạo ở đây bằng JavaScript */}
+            </div>
             <p id="quizFeedback" aria-live="assertive" aria-atomic="true"></p>
             <p id="quizCompletionMessage" style="display: none;" aria-live="assertive" aria-atomic="true"></p>
         </div>
@@ -562,6 +567,8 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         const HIEU_POST_MESSAGE_DELAY = 500; 
         const SYSTEM_MESSAGE_DELAY = 1000; 
         const QUIZ_FEEDBACK_DELAY = 1500;
+        const BOW_TIE_AVOIDANCE_RADIUS = 75; // How close bow tie can get before fleeing (pixels)
+        const BOW_TIE_FLEE_SPEED = 3; // How fast wrong answers move
 
         function slugify(text) {
             if (typeof text !== 'string') return '';
@@ -672,7 +679,12 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         let currentQuizSet = manQuizData; 
         let currentQuizQuestionIndex = 0;
         let quizActive = false; 
-        let currentTeleportedButtonsInfo = []; // Stores {element, originalGridPositionStyle}
+        // Variables for drag and drop quiz
+        let bowTieElement, answerTargetElements = [], isDraggingBowTie = false;
+        let bowTieOffsetX, bowTieOffsetY;
+        let bowTieInitialX, bowTieInitialY; // To return bow tie if not dropped correctly
+        let animationFrameId;
+
 
         let currentSceneIndex = 0, currentMessageInScene = 0, manAvatarCurrent = "images/HueMan.jpg", manNicknameGlobal = "Mẫn";
         let hieuMessageQueue = [];
@@ -684,9 +696,11 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         const nextSceneButton = document.getElementById('nextSceneButton');
         const quizContainer = document.getElementById('quizContainer');
         const quizQuestionEl = document.getElementById('quizQuestion');
-        const quizChoicesEl = document.getElementById('quizChoices');
+        const answerTargetsContainerEl = document.getElementById('answerTargetsContainer'); // Changed from quizChoicesEl
         const quizFeedbackEl = document.getElementById('quizFeedback');
         const quizCompletionMessageEl = document.getElementById('quizCompletionMessage');
+        const bowTieContainer = document.getElementById('bowTieContainer');
+
 
         nextSceneButton.onclick = () => { if (currentSceneIndex < scriptData.length - 1) loadScene(currentSceneIndex + 1); };
 
@@ -898,30 +912,26 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             processNextMessage();
         }
 
-        // --- Quiz Functions ---
+        // --- Quiz Functions (Drag and Drop Bow Tie) ---
         function switchToQuiz(quizDataset, quizTitle, quizSubjectName, isManQuiz) {
             quizActive = true;
             currentQuizSet = quizDataset;
             currentQuizQuestionIndex = 0;
-            currentTeleportedButtonsInfo = []; // Reset for the new quiz set
-
+            
             chatMessagesDiv.style.display = 'none';
             hieuActionsDiv.style.display = 'none';
             navigationArea.style.display = 'none';
             quizContainer.style.display = 'flex';
             quizContainer.setAttribute('aria-hidden', 'false');
 
-
             headerNameSpan.textContent = quizTitle;
             headerAvatarImg.src = getAvatar(quizSubjectName, true);
             headerAvatarImg.alt = getDisplayName(quizSubjectName) + " Avatar";
             headerAvatarImg.style.display = 'block';
             
-            if (isManQuiz) {
-                chatContainer.classList.add('theme-rose');
-            } else {
-                chatContainer.classList.remove('theme-rose'); 
-            }
+            if (isManQuiz) chatContainer.classList.add('theme-rose');
+            else chatContainer.classList.remove('theme-rose'); 
+            
             quizQuestionEl.focus(); 
             displayQuizQuestion();
         }
@@ -930,32 +940,58 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             quizFeedbackEl.textContent = '';
             quizCompletionMessageEl.style.display = 'none';
             quizQuestionEl.style.display = 'block'; 
-            quizChoicesEl.style.display = 'grid';  
-            currentTeleportedButtonsInfo = []; // Reset teleported buttons for new question
+            answerTargetsContainerEl.style.display = 'grid';  
+            bowTieContainer.style.display = 'flex';
 
+            if (animationFrameId) cancelAnimationFrame(animationFrameId); // Cancel previous animation loop
 
             if (currentQuizQuestionIndex < currentQuizSet.length) {
                 const q = currentQuizSet[currentQuizQuestionIndex];
                 quizQuestionEl.textContent = q.question;
-                quizChoicesEl.innerHTML = ''; 
+                answerTargetsContainerEl.innerHTML = ''; // Clear previous targets
+                answerTargetElements = []; // Reset the array of target elements
+
+                // Create bow tie if it doesn't exist, or reset its position
+                bowTieElement = document.getElementById('bowTie');
+                resetBowTiePosition();
+
 
                 const shuffledChoices = [...q.choices].sort(() => Math.random() - 0.5);
 
-                shuffledChoices.forEach((choiceText, index) => {
-                    const button = document.createElement('button');
-                    button.classList.add('quiz-choice-button');
-                    button.setAttribute('role', 'button');
-                    button.setAttribute('aria-label', `Lựa chọn: ${choiceText}`);
-                    button.textContent = choiceText;
-                    // Store original grid position for non-teleported buttons
-                    button.dataset.originalGridColumn = (index % 2) + 1;
-                    button.dataset.originalGridRow = Math.floor(index / 2) + 1;
-                    button.style.gridColumn = button.dataset.originalGridColumn;
-                    button.style.gridRow = button.dataset.originalGridRow;
-
-                    button.onclick = (event) => handleQuizAnswer(choiceText, event.target, q.correctAnswerText, q.feedback);
-                    quizChoicesEl.appendChild(button);
+                shuffledChoices.forEach(choiceText => {
+                    const target = document.createElement('div');
+                    target.classList.add('answer-target');
+                    target.textContent = choiceText;
+                    target.dataset.choiceText = choiceText; // Store choice text
+                    target.dataset.isCorrect = (choiceText === q.correctAnswerText).toString();
+                    target.setAttribute('role', 'option');
+                    target.setAttribute('aria-label', `Lựa chọn trả lời: ${choiceText}`);
+                    answerTargetsContainerEl.appendChild(target);
+                    answerTargetElements.push({
+                        element: target,
+                        isCorrect: choiceText === q.correctAnswerText,
+                        originalX: target.offsetLeft, // Store original relative positions for fleeing logic
+                        originalY: target.offsetTop,
+                        currentX: target.offsetLeft,
+                        currentY: target.offsetTop
+                    });
                 });
+                // Ensure original positions are captured after they are in the DOM and grid layout is applied
+                 requestAnimationFrame(() => {
+                    answerTargetElements.forEach(targetInfo => {
+                        targetInfo.originalX = targetInfo.element.offsetLeft;
+                        targetInfo.originalY = targetInfo.element.offsetTop;
+                        targetInfo.currentX = targetInfo.element.offsetLeft;
+                        targetInfo.currentY = targetInfo.element.offsetTop;
+                        // Set initial position for absolute positioning if needed later by fleeing
+                        targetInfo.element.style.position = 'absolute';
+                        targetInfo.element.style.left = targetInfo.originalX + 'px';
+                        targetInfo.element.style.top = targetInfo.originalY + 'px';
+
+                    });
+                });
+
+
             } else {
                 if (currentQuizSet === manQuizData) {
                     switchToQuiz(tiemCuonLenQuizData, "Câu hỏi về Tiệm Cuộn Len", "Tiệm Cuộn Len", false);
@@ -964,99 +1000,173 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                 }
             }
         }
+        
+        function resetBowTiePosition() {
+            if (bowTieElement) {
+                bowTieElement.classList.remove('dragging');
+                bowTieElement.setAttribute('aria-grabbed', 'false');
+                bowTieElement.style.position = 'relative'; // Back to flow in its container
+                bowTieElement.style.left = 'auto';
+                bowTieElement.style.top = 'auto';
+                // Re-center in its container (might need adjustment based on bowTieContainer styling)
+                bowTieElement.style.transform = 'translate(0,0)';
+            }
+        }
 
-        function handleQuizAnswer(selectedChoiceText, clickedButton, correctAnswerText, feedback) {
-            const allChoiceButtons = Array.from(quizChoicesEl.querySelectorAll('.quiz-choice-button'));
-            const correctButtonElement = allChoiceButtons.find(btn => btn.textContent === correctAnswerText);
 
-            if (selectedChoiceText === correctAnswerText) {
-                quizFeedbackEl.textContent = feedback;
-                quizFeedbackEl.style.color = '#28a745'; 
-                clickedButton.classList.add('correct');
-                allChoiceButtons.forEach(btn => btn.disabled = true); 
-                
-                setTimeout(() => {
-                    currentQuizQuestionIndex++;
-                    displayQuizQuestion();
-                }, QUIZ_FEEDBACK_DELAY);
+        function onBowTieMove(event) {
+            if (!isDraggingBowTie || !bowTieElement) return;
+            event.preventDefault(); // Prevent scrolling on touch devices
+
+            let clientX, clientY;
+            if (event.touches) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
             } else {
-                quizFeedbackEl.textContent = ''; 
-                
-                clickedButton.disabled = true; 
-                clickedButton.classList.add('teleported'); 
+                clientX = event.clientX;
+                clientY = event.clientY;
+            }
+            
+            // Position bowTie relative to the quizContainer for consistency
+            const quizContainerRect = quizContainer.getBoundingClientRect();
+            bowTieElement.style.left = `${clientX - quizContainerRect.left - bowTieOffsetX}px`;
+            bowTieElement.style.top = `${clientY - quizContainerRect.top - bowTieOffsetY}px`;
+        }
 
-                const choicesRect = quizChoicesEl.getBoundingClientRect();
-                const buttonStyle = getComputedStyle(clickedButton);
-                const buttonWidth = parseFloat(buttonStyle.width);
-                const buttonHeight = parseFloat(buttonStyle.height);
-                
-                let randomTop, randomLeft, attempts = 0;
-                const maxAttempts = 100; // Increased attempts for better placement
+        function gameLoop() {
+            if (!quizActive || !isDraggingBowTie) { // Only run loop if quiz is active and dragging
+                if(animationFrameId) cancelAnimationFrame(animationFrameId);
+                return;
+            }
 
-                const forbiddenRects = [];
-                // Add rect of the correct answer button
-                if (correctButtonElement) {
-                    forbiddenRects.push(correctButtonElement.getBoundingClientRect());
+            const bowTieRect = bowTieElement.getBoundingClientRect();
+
+            answerTargetElements.forEach(targetInfo => {
+                const targetElement = targetInfo.element;
+                targetElement.classList.remove('correct-answer-hover', 'fleeing');
+
+                if (!targetInfo.isCorrect) {
+                    const targetRect = targetElement.getBoundingClientRect();
+                    const dx = (targetRect.left + targetRect.width / 2) - (bowTieRect.left + bowTieRect.width / 2);
+                    const dy = (targetRect.top + targetRect.height / 2) - (bowTieRect.top + bowTieRect.height / 2);
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < BOW_TIE_AVOIDANCE_RADIUS) {
+                        targetElement.classList.add('fleeing');
+                        const dirX = dx / dist;
+                        const dirY = dy / dist;
+                        
+                        // Calculate new potential position relative to its container (answerTargetsContainerEl)
+                        let newX = targetInfo.currentX + dirX * BOW_TIE_FLEE_SPEED;
+                        let newY = targetInfo.currentY + dirY * BOW_TIE_FLEE_SPEED;
+
+                        // Boundary checks within answerTargetsContainerEl
+                        const containerRect = answerTargetsContainerEl.getBoundingClientRect();
+                        const parentRect = quizContainer.getBoundingClientRect(); // quizContainer is the offsetParent for absolute positioning
+
+                        newX = Math.max(0, Math.min(newX, containerRect.width - targetRect.width));
+                        newY = Math.max(0, Math.min(newY, containerRect.height - targetRect.height));
+                        
+                        targetInfo.currentX = newX;
+                        targetInfo.currentY = newY;
+                        targetElement.style.left = `${newX}px`;
+                        targetElement.style.top = `${newY}px`;
+                    } else {
+                        // Optional: Spring back to original position if not fleeing
+                        // This can be complex to make smooth, for now, they stay where they fled to.
+                    }
+                } else { // It's the correct answer target
+                    if (isOverlapping(bowTieRect, targetElement.getBoundingClientRect())) {
+                        targetElement.classList.add('correct-answer-hover');
+                    }
                 }
-                // Add rects of other non-teleported wrong answers (still in grid)
-                allChoiceButtons.forEach(btn => {
-                    if (btn !== clickedButton && btn !== correctButtonElement && !btn.classList.contains('teleported')) {
-                        forbiddenRects.push(btn.getBoundingClientRect());
-                    }
-                });
-                // Add rects of already teleported buttons
-                currentTeleportedButtonsInfo.forEach(info => {
-                    if (info.element !== clickedButton) { // Don't check against itself if it was previously teleported
-                         forbiddenRects.push(info.element.getBoundingClientRect());
-                    }
-                });
+            });
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
 
 
-                do {
-                    randomTop = Math.random() * (choicesRect.height - buttonHeight);
-                    randomLeft = Math.random() * (choicesRect.width - buttonWidth);
+        function onBowTieEnd(event) {
+            if (!isDraggingBowTie || !bowTieElement) return;
+            isDraggingBowTie = false;
+            bowTieElement.classList.remove('dragging');
+            bowTieElement.setAttribute('aria-grabbed', 'false');
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+            const bowTieRect = bowTieElement.getBoundingClientRect();
+            let droppedOnCorrect = false;
+
+            answerTargetElements.forEach(targetInfo => {
+                targetInfo.element.classList.remove('correct-answer-hover');
+                if (targetInfo.isCorrect && isOverlapping(bowTieRect, targetInfo.element.getBoundingClientRect())) {
+                    droppedOnCorrect = true;
+                    quizFeedbackEl.textContent = currentQuizSet[currentQuizQuestionIndex].feedback;
+                    quizFeedbackEl.style.color = '#28a745';
+                    targetInfo.element.classList.add('correct-answer-hover'); // Keep highlight on correct
                     
-                    const newRect = {
-                        top: choicesRect.top + randomTop, 
-                        left: choicesRect.left + randomLeft,
-                        right: choicesRect.left + randomLeft + buttonWidth,
-                        bottom: choicesRect.top + randomTop + buttonHeight,
-                    };
-                    
-                    let collision = false;
-                    for (const forbiddenRect of forbiddenRects) {
-                        if (isOverlapping(newRect, forbiddenRect)) {
-                            collision = true;
-                            break;
-                        }
-                    }
-                    if (!collision) break; 
-                    attempts++;
-                } while (attempts < maxAttempts);
+                    // Disable all targets
+                    answerTargetElements.forEach(t => t.element.style.pointerEvents = 'none');
 
-                if (attempts >= maxAttempts) { 
-                    console.warn("Max attempts for teleport. Button might overlap or be placed at default.");
-                    // Fallback: try to place it in an empty grid cell if possible, or just top-left
-                    // This part can be complex, for now, just place it.
-                    randomTop = Math.min(randomTop, choicesRect.height - buttonHeight); // Ensure within bounds
-                    randomLeft = Math.min(randomLeft, choicesRect.width - buttonWidth);
-                }
 
-                clickedButton.style.position = 'absolute';
-                clickedButton.style.top = `${randomTop}px`;
-                clickedButton.style.left = `${randomLeft}px`;
-                
-                // Update or add to currentTeleportedButtonsInfo
-                const existingTeleported = currentTeleportedButtonsInfo.find(info => info.element === clickedButton);
-                if (!existingTeleported) {
-                     currentTeleportedButtonsInfo.push({element: clickedButton });
+                    setTimeout(() => {
+                        currentQuizQuestionIndex++;
+                        displayQuizQuestion();
+                    }, QUIZ_FEEDBACK_DELAY);
                 }
+            });
+
+            if (!droppedOnCorrect) {
+                resetBowTiePosition();
             }
         }
         
+        function addBowTieDragListeners() {
+            bowTieElement = document.getElementById('bowTie');
+            if (!bowTieElement) return;
+
+            function onBowTieStart(event) {
+                isDraggingBowTie = true;
+                bowTieElement.classList.add('dragging');
+                bowTieElement.setAttribute('aria-grabbed', 'true');
+                bowTieElement.style.position = 'absolute'; // Switch to absolute for dragging
+                
+                let clientX, clientY;
+                if (event.touches) {
+                    clientX = event.touches[0].clientX;
+                    clientY = event.touches[0].clientY;
+                } else {
+                    clientX = event.clientX;
+                }
+                const bowTieRect = bowTieElement.getBoundingClientRect();
+                bowTieOffsetX = clientX - bowTieRect.left;
+                bowTieOffsetY = (event.touches ? event.touches[0].clientY : event.clientY) - bowTieRect.top;
+
+                // Store initial relative position for reset
+                const bowTieContainerRect = bowTieContainer.getBoundingClientRect();
+                const quizContainerRect = quizContainer.getBoundingClientRect();
+                bowTieInitialX = bowTieContainerRect.left - quizContainerRect.left + (bowTieContainerRect.width - bowTieRect.width) / 2;
+                bowTieInitialY = bowTieContainerRect.top - quizContainerRect.top + (bowTieContainerRect.height - bowTieRect.height) / 2;
+
+
+                onBowTieMove(event); // Set initial position based on click/touch
+                animationFrameId = requestAnimationFrame(gameLoop); // Start game loop
+            }
+
+            bowTieElement.removeEventListener('mousedown', onBowTieStart); // Remove old if any
+            bowTieElement.removeEventListener('touchstart', onBowTieStart);
+            bowTieElement.addEventListener('mousedown', onBowTieStart);
+            bowTieElement.addEventListener('touchstart', onBowTieStart, { passive: false });
+        }
+        
+        // Global listeners for mouse/touch move and up, added when drag starts
+        document.addEventListener('mousemove', onBowTieMove);
+        document.addEventListener('touchmove', onBowTieMove, { passive: false });
+        document.addEventListener('mouseup', onBowTieEnd);
+        document.addEventListener('touchend', onBowTieEnd);
+
+
         function isOverlapping(rect1, rect2) {
             if (!rect1 || !rect2) return false;
-            const buffer = 2; // Increased buffer slightly for better visual separation
+            const buffer = 1; 
             return !(rect1.right - buffer < rect2.left + buffer || 
                      rect1.left + buffer > rect2.right - buffer || 
                      rect1.bottom - buffer < rect2.top + buffer || 
@@ -1065,7 +1175,8 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
 
         function endAllQuizzes() {
             quizQuestionEl.style.display = 'none';
-            quizChoicesEl.style.display = 'none';
+            answerTargetsContainerEl.style.display = 'none';
+            bowTieContainer.style.display = 'none';
             quizFeedbackEl.style.display = 'none';
             quizCompletionMessageEl.textContent = `Chúc mừng đã hoàn thành tất cả Quiz! Bạn thật là hiểu Mẫn và Tiệm Cuộn Len đó!`;
             quizCompletionMessageEl.style.display = 'block';
@@ -1081,7 +1192,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         
         const purifyScript = document.createElement('script');
         purifyScript.src = "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js";
-        purifyScript.onload = () => { console.log("DOMPurify loaded successfully."); loadScene(0); };
+        purifyScript.onload = () => { console.log("DOMPurify loaded successfully."); loadScene(0); addBowTieDragListeners(); };
         purifyScript.onerror = () => {
             console.error("DOMPurify could not be loaded. HTML content might not be sanitized.");
             if (typeof DOMPurify === 'undefined') {
@@ -1090,6 +1201,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                     if (typeof html !== 'string') return ''; return html.replace(/</g, "<").replace(/>/g, ">"); }};
             }
             loadScene(0);
+            addBowTieDragListeners();
         };
         document.head.appendChild(purifyScript);
     </script>
