@@ -305,7 +305,7 @@
         <div class="navigation-area" id="navigationArea">
             <button class="nav-button" id="nextSceneButton" style="display: none;" role="button" aria-label="Chuyển đến cảnh tiếp theo">Cảnh Tiếp</button>
         </div>
-        {/* Quiz container and its children are removed */}
+        
     </div>
 
     <script>
@@ -435,10 +435,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         const MESSAGE_CONTINUOUS_DELAY = 700; 
         const HIEU_POST_MESSAGE_DELAY = 500; 
         const SYSTEM_MESSAGE_DELAY = 1000; 
-        // Removed QUIZ_FEEDBACK_DELAY, BOW_TIE_AVOIDANCE_RADIUS, BOW_TIE_FLEE_DISTANCE_FACTOR
-
-        // Removed zKeyPressCount, zKeyTimer, Z_KEY_RESET_TIMEOUT (cheat code for quiz)
-
+        
         function slugify(text) {
             if (typeof text !== 'string') return '';
             let slug = text.toString().toLowerCase();
@@ -511,9 +508,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         }
         
         const scriptData = parseScript(rawScriptText);
-        // Removed quizData arrays (manQuizData, tiemCuonLenQuizData)
-        // Removed quiz-related state variables (currentQuizSet, currentQuizQuestionIndex, quizActive, bowTieElement, etc.)
-
+        
         let currentSceneIndex = 0, currentMessageInScene = 0, manAvatarCurrent = "images/HueMan.jpg", manNicknameGlobal = "Mẫn";
         let hieuMessageQueue = [];
         const MAN_AVATAR_DEFAULT = "images/HueMan.jpg", MAN_AVATAR_SCENE15 = "images/30092024.jpg";
@@ -522,8 +517,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         const headerNameSpan = document.getElementById('headerName');
         const chatMessagesDiv = document.getElementById('chatMessages'), hieuActionsDiv = document.getElementById('hieuActions');
         const nextSceneButton = document.getElementById('nextSceneButton');
-        // Removed quiz-related element getters
-
+        
         nextSceneButton.onclick = () => { if (currentSceneIndex < scriptData.length - 1) loadScene(currentSceneIndex + 1); };
 
         function getAvatar(speaker, forHeader = false) {
@@ -618,7 +612,6 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         }
 
         function updateNextSceneButtonVisibility() {
-            // No quizActive check needed as quiz is removed
             if (currentSceneIndex < scriptData.length - 1) { nextSceneButton.style.display = 'block'; nextSceneButton.disabled = false; }
             else nextSceneButton.style.display = 'none';
         }
@@ -626,20 +619,19 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         function processNextMessage() {
             const scene = scriptData[currentSceneIndex];
             if (!scene) { 
-                // End of script - behavior when no more scenes
-                headerNameSpan.textContent = manNicknameGlobal; // Show Mẫn's name at true end
+                headerNameSpan.textContent = manNicknameGlobal; 
                 headerAvatarImg.src = getAvatar("Mẫn", true);
                 headerAvatarImg.alt = manNicknameGlobal + " Avatar";
                 headerAvatarImg.style.display = 'block';
-                chatContainer.classList.add('theme-rose'); // Ensure Mẫn's theme at the very end
+                chatContainer.classList.add('theme-rose'); 
                 nextSceneButton.style.display = 'none'; 
-                hieuActionsDiv.innerHTML = ''; // Clear any remaining Hieu buttons
+                hieuActionsDiv.innerHTML = ''; 
                 return; 
             }
             if (currentMessageInScene >= scene.messages.length && hieuMessageQueue.length === 0) {
                 if (currentSceneIndex < scriptData.length - 1) {
                     updateNextSceneButtonVisibility();
-                } else { // End of all scenes
+                } else { 
                     headerNameSpan.textContent = manNicknameGlobal; 
                     headerAvatarImg.src = getAvatar("Mẫn", true); 
                     headerAvatarImg.alt = manNicknameGlobal + " Avatar";
@@ -707,10 +699,13 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             manAvatarCurrent = MAN_AVATAR_DEFAULT; 
             hideTypingIndicator(); nextSceneButton.style.display = 'none';
             chatMessagesDiv.innerHTML = ''; hieuActionsDiv.innerHTML = '';
-            // Ensure quiz related elements are hidden if they were ever shown
-            const quizContainerEl = document.getElementById('quizContainer');
-            if (quizContainerEl) quizContainerEl.style.display = 'none'; 
             
+            // Ensure elements used only for chat are visible, and quiz is hidden
+            const quizContainerEl = document.getElementById('quizContainer');
+            if (quizContainerEl) { // Check if quiz container exists (it doesn't in this version)
+                 quizContainerEl.style.display = 'none'; 
+                 quizContainerEl.setAttribute('aria-hidden', 'true');
+            }
             chatMessagesDiv.style.display = 'flex'; 
             hieuActionsDiv.style.display = 'flex';
             navigationArea.style.display = 'flex';
@@ -723,7 +718,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                 headerAvatarImg.style.display = 'block';
                 chatContainer.classList.add('theme-rose'); 
                 nextSceneButton.style.display = 'none';
-                hieuActionsDiv.innerHTML = ''; // Clear Hieu actions at the very end
+                hieuActionsDiv.innerHTML = ''; 
                 return;
             }
             const scene = scriptData[currentSceneIndex];
@@ -752,15 +747,11 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             processNextMessage();
         }
         
-        // Removed all Quiz Functions (switchToQuiz, displayQuizQuestion, handleQuizAnswer, endAllQuizzes, addBowTieDragListeners, gameLoop, onBowTieMove, onBowTieEnd, resetBowTiePosition)
-        // Removed cheat code event listener for 'z' key
-
         const purifyScript = document.createElement('script');
         purifyScript.src = "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js";
         purifyScript.onload = () => { 
             console.log("DOMPurify loaded successfully."); 
             loadScene(0); 
-            // addBowTieDragListeners(); // This was for the bow-tie quiz, now removed
         };
         purifyScript.onerror = () => {
             console.error("DOMPurify could not be loaded. HTML content might not be sanitized.");
@@ -770,7 +761,6 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                     if (typeof html !== 'string') return ''; return html.replace(/</g, "<").replace(/>/g, ">"); }};
             }
             loadScene(0);
-            // addBowTieDragListeners(); // This was for the bow-tie quiz, now removed
         };
         document.head.appendChild(purifyScript);
     </script>
