@@ -71,16 +71,16 @@
             cursor: pointer;
             text-align: left;
             font-size: 0.95em;
-            transition: background-color 0.3s, opacity 0.2s, transform 0.1s ease-out; /* Added transform for subtle press effect */
+            transition: background-color 0.3s, opacity 0.2s, transform 0.1s ease-out; 
             width: 100%;
             box-sizing: border-box;
         }
         .hieu-button:hover:not(:disabled) {
             background-color: #0056b3;
-            transform: translateY(-1px); /* Subtle lift on hover */
+            transform: translateY(-1px); 
         }
          .hieu-button:active:not(:disabled) {
-            transform: translateY(0px); /* Press down effect */
+            transform: translateY(0px); 
         }
 
 
@@ -309,7 +309,7 @@
             cursor: pointer;
             font-size: 1em;
             transition: background-color 0.2s, transform 0.1s ease-out; 
-            position: relative; 
+            position: relative; /* Default: in the grid flow */
             z-index: 1;
         }
         .chat-container.theme-rose #quizContainer .quiz-choice-button {
@@ -326,7 +326,6 @@
         .quiz-choice-button:active:not(:disabled) {
             transform: translateY(0px);
         }
-
 
         .quiz-choice-button.teleported { 
             background-color: #dc3545 !important; 
@@ -368,7 +367,7 @@
                 font-size: 0.9em;
                 padding: 7px 10px;
             }
-            .avatar { /* Message avatar */
+            .avatar { 
                 width: 28px;
                 height: 28px;
             }
@@ -385,9 +384,9 @@
                 margin-bottom: 20px;
             }
             #quizChoices {
-                grid-template-columns: 1fr; /* Single column for quiz choices on small screens */
+                grid-template-columns: 1fr; 
                 gap: 10px;
-                min-height: 200px; /* Adjust if needed for single column */
+                min-height: 200px; 
             }
             #quizFeedback {
                 font-size: 1.1em;
@@ -396,7 +395,7 @@
                 font-size: 1.4em;
             }
             .message-content-wrapper {
-                max-width: 85%; /* Allow slightly wider messages on small screens */
+                max-width: 85%; 
             }
         }
          @media (max-width: 400px) {
@@ -428,7 +427,7 @@
             <button class="nav-button" id="nextSceneButton" style="display: none;" role="button" aria-label="Chuyển đến cảnh tiếp theo">Cảnh Tiếp</button>
         </div>
         <div id="quizContainer" style="display: none;" aria-hidden="true" role="region" aria-label="Phần đố vui">
-            <h2 id="quizQuestion" tabindex="-1"></h2> {/* tabindex -1 to allow focus via JS */}
+            <h2 id="quizQuestion"></h2>
             <div id="quizChoices" role="grid" aria-labelledby="quizQuestion"></div>
             <p id="quizFeedback" aria-live="assertive" aria-atomic="true"></p>
             <p id="quizCompletionMessage" style="display: none;" aria-live="assertive" aria-atomic="true"></p>
@@ -673,7 +672,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         let currentQuizSet = manQuizData; 
         let currentQuizQuestionIndex = 0;
         let quizActive = false; 
-        let currentTeleportedButtons = []; 
+        let currentTeleportedButtonsInfo = []; // Stores {element, originalGridPositionStyle}
 
         let currentSceneIndex = 0, currentMessageInScene = 0, manAvatarCurrent = "images/HueMan.jpg", manNicknameGlobal = "Mẫn";
         let hieuMessageQueue = [];
@@ -736,7 +735,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             if (image) {
                 const imgElement = document.createElement('img'); imgElement.src = image;
                 imgElement.alt = image.split('/').pop().split('.')[0] || 'Chat image';
-                imgElement.loading = "lazy"; // Lazy load images
+                imgElement.loading = "lazy"; 
                 imgElement.onerror = function() { this.src = `https://placehold.co/300x200/EEE/333?text=Error+${encodeURIComponent(imgElement.alt)}`; this.onerror=null; };
                 messageBubble.appendChild(imgElement);
             }
@@ -745,7 +744,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                 videoElement.src = video; 
                 videoElement.controls = true; videoElement.autoplay = true; videoElement.muted = false; 
                 videoElement.playsInline = true; 
-                videoElement.loading = "lazy"; // Lazy load videos
+                videoElement.loading = "lazy"; 
                 messageBubble.appendChild(videoElement);
             }
 
@@ -835,7 +834,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                 const hieuMsg = hieuMessageQueue[0];
                 const button = document.createElement('button'); button.classList.add('hieu-button');
                 button.setAttribute('role', 'button');
-                let buttonTextForLabel = hieuMsg.text.replace(/\*.*?\*/g, "").trim(); // Remove actions for label
+                let buttonTextForLabel = hieuMsg.text.replace(/\*.*?\*/g, "").trim(); 
                 if (hieuMsg.image) buttonTextForLabel += " (có hình ảnh)";
                 if (hieuMsg.video) buttonTextForLabel += " (có video)";
                 button.setAttribute('aria-label', `Lựa chọn của Hiếu: ${buttonTextForLabel || 'Tiếp tục'}`);
@@ -904,7 +903,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             quizActive = true;
             currentQuizSet = quizDataset;
             currentQuizQuestionIndex = 0;
-            currentTeleportedButtons = []; 
+            currentTeleportedButtonsInfo = []; // Reset for the new quiz set
 
             chatMessagesDiv.style.display = 'none';
             hieuActionsDiv.style.display = 'none';
@@ -923,7 +922,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             } else {
                 chatContainer.classList.remove('theme-rose'); 
             }
-            quizQuestionEl.focus(); // Focus on the question for screen readers
+            quizQuestionEl.focus(); 
             displayQuizQuestion();
         }
 
@@ -932,7 +931,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             quizCompletionMessageEl.style.display = 'none';
             quizQuestionEl.style.display = 'block'; 
             quizChoicesEl.style.display = 'grid';  
-            currentTeleportedButtons = []; 
+            currentTeleportedButtonsInfo = []; // Reset teleported buttons for new question
 
 
             if (currentQuizQuestionIndex < currentQuizSet.length) {
@@ -942,12 +941,18 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
 
                 const shuffledChoices = [...q.choices].sort(() => Math.random() - 0.5);
 
-                shuffledChoices.forEach(choiceText => {
+                shuffledChoices.forEach((choiceText, index) => {
                     const button = document.createElement('button');
                     button.classList.add('quiz-choice-button');
                     button.setAttribute('role', 'button');
                     button.setAttribute('aria-label', `Lựa chọn: ${choiceText}`);
                     button.textContent = choiceText;
+                    // Store original grid position for non-teleported buttons
+                    button.dataset.originalGridColumn = (index % 2) + 1;
+                    button.dataset.originalGridRow = Math.floor(index / 2) + 1;
+                    button.style.gridColumn = button.dataset.originalGridColumn;
+                    button.style.gridRow = button.dataset.originalGridRow;
+
                     button.onclick = (event) => handleQuizAnswer(choiceText, event.target, q.correctAnswerText, q.feedback);
                     quizChoicesEl.appendChild(button);
                 });
@@ -975,7 +980,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                     displayQuizQuestion();
                 }, QUIZ_FEEDBACK_DELAY);
             } else {
-                quizFeedbackEl.textContent = ''; // No wrong answer feedback text
+                quizFeedbackEl.textContent = ''; 
                 
                 clickedButton.disabled = true; 
                 clickedButton.classList.add('teleported'); 
@@ -986,17 +991,23 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                 const buttonHeight = parseFloat(buttonStyle.height);
                 
                 let randomTop, randomLeft, attempts = 0;
-                const maxAttempts = 50; 
+                const maxAttempts = 100; // Increased attempts for better placement
 
-                const otherVisibleButtons = allChoiceButtons.filter(btn => btn !== clickedButton && !btn.classList.contains('teleported') && btn !== correctButtonElement);
-                const staticOccupiedRects = otherVisibleButtons.map(btn => btn.getBoundingClientRect());
-                if (correctButtonElement && correctButtonElement !== clickedButton) {
-                    staticOccupiedRects.push(correctButtonElement.getBoundingClientRect());
+                const forbiddenRects = [];
+                // Add rect of the correct answer button
+                if (correctButtonElement) {
+                    forbiddenRects.push(correctButtonElement.getBoundingClientRect());
                 }
-                // Add already teleported buttons to occupiedRects, using their current absolute positions
-                currentTeleportedButtons.forEach(teleportedBtn => {
-                    if (teleportedBtn !== clickedButton) { // Don't check against itself before it's moved
-                        staticOccupiedRects.push(teleportedBtn.getBoundingClientRect());
+                // Add rects of other non-teleported wrong answers (still in grid)
+                allChoiceButtons.forEach(btn => {
+                    if (btn !== clickedButton && btn !== correctButtonElement && !btn.classList.contains('teleported')) {
+                        forbiddenRects.push(btn.getBoundingClientRect());
+                    }
+                });
+                // Add rects of already teleported buttons
+                currentTeleportedButtonsInfo.forEach(info => {
+                    if (info.element !== clickedButton) { // Don't check against itself if it was previously teleported
+                         forbiddenRects.push(info.element.getBoundingClientRect());
                     }
                 });
 
@@ -1010,37 +1021,46 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                         left: choicesRect.left + randomLeft,
                         right: choicesRect.left + randomLeft + buttonWidth,
                         bottom: choicesRect.top + randomTop + buttonHeight,
-                        width: buttonWidth,
-                        height: buttonHeight
                     };
                     
-                    let isOverlappingOther = false;
-                    for (const rect of staticOccupiedRects) {
-                        if (isOverlapping(newRect, rect)) {
-                            isOverlappingOther = true;
+                    let collision = false;
+                    for (const forbiddenRect of forbiddenRects) {
+                        if (isOverlapping(newRect, forbiddenRect)) {
+                            collision = true;
                             break;
                         }
                     }
-                    if (!isOverlappingOther) break; 
+                    if (!collision) break; 
                     attempts++;
                 } while (attempts < maxAttempts);
+
+                if (attempts >= maxAttempts) { 
+                    console.warn("Max attempts for teleport. Button might overlap or be placed at default.");
+                    // Fallback: try to place it in an empty grid cell if possible, or just top-left
+                    // This part can be complex, for now, just place it.
+                    randomTop = Math.min(randomTop, choicesRect.height - buttonHeight); // Ensure within bounds
+                    randomLeft = Math.min(randomLeft, choicesRect.width - buttonWidth);
+                }
 
                 clickedButton.style.position = 'absolute';
                 clickedButton.style.top = `${randomTop}px`;
                 clickedButton.style.left = `${randomLeft}px`;
                 
-                if (!currentTeleportedButtons.includes(clickedButton)) {
-                    currentTeleportedButtons.push(clickedButton);
+                // Update or add to currentTeleportedButtonsInfo
+                const existingTeleported = currentTeleportedButtonsInfo.find(info => info.element === clickedButton);
+                if (!existingTeleported) {
+                     currentTeleportedButtonsInfo.push({element: clickedButton });
                 }
             }
         }
         
         function isOverlapping(rect1, rect2) {
             if (!rect1 || !rect2) return false;
-            return !(rect1.right < rect2.left || 
-                     rect1.left > rect2.right || 
-                     rect1.bottom < rect2.top || 
-                     rect1.top > rect2.bottom);
+            const buffer = 2; // Increased buffer slightly for better visual separation
+            return !(rect1.right - buffer < rect2.left + buffer || 
+                     rect1.left + buffer > rect2.right - buffer || 
+                     rect1.bottom - buffer < rect2.top + buffer || 
+                     rect1.top + buffer > rect2.bottom - buffer);
         }
 
         function endAllQuizzes() {
@@ -1051,7 +1071,6 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             quizCompletionMessageEl.style.display = 'block';
             quizCompletionMessageEl.style.color = '#007bff'; 
             quizCompletionMessageEl.focus();
-
 
             headerNameSpan.textContent = "Hoàn Thành!"; 
             headerAvatarImg.src = getAvatar("Mẫn", true); 
