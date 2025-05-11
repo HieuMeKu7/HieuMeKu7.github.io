@@ -287,44 +287,42 @@
             grid-template-columns: repeat(2, 1fr); 
             gap: 15px; 
             margin-bottom: 20px;
-            position: relative; 
-            min-height: 150px; 
+            position: relative; /* Crucial for absolute positioning of children */
+            min-height: 150px; /* Ensure space for teleporting buttons */
         }
         .quiz-choice-button {
-            background-color: #007bff; /* Default blue for quiz buttons */
+            background-color: #007bff; 
             color: white;
             border: none;
             padding: 12px 15px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 1em;
-            transition: background-color 0.2s, transform 0.3s ease-out, top 0.5s ease-out, left 0.5s ease-out;
-            position: relative; 
+            /* Remove transition for top/left to make teleport instant */
+            transition: background-color 0.2s, transform 0.3s ease-out; 
+            position: relative; /* Default: in the grid flow */
             z-index: 1;
         }
         .chat-container.theme-rose #quizContainer .quiz-choice-button {
-             background-color: #C2185B; /* Rose theme for quiz buttons when Mẫn quiz */
+             background-color: #C2185B; 
         }
         .chat-container.theme-rose #quizContainer .quiz-choice-button:hover:not(:disabled) {
              background-color: #AD1457;
         }
          .chat-container:not(.theme-rose) #quizContainer .quiz-choice-button:hover:not(:disabled) {
-             background-color: #0056b3; /* Default blue hover */
+             background-color: #0056b3; 
         }
 
-
-        .quiz-choice-button.jumping {
-            background-color: #dc3545 !important; 
-            z-index: 10; 
+        .quiz-choice-button.teleported { /* Class for teleported wrong buttons */
+            background-color: #dc3545 !important; /* Red color for wrong teleported button */
+            position: absolute !important; /* Make it absolute to position freely */
+            z-index: 10; /* Ensure it's above others if needed, though grid items won't overlap by default */
         }
          .quiz-choice-button.correct {
             background-color: #28a745 !important; 
         }
-        .quiz-choice-button:disabled:not(.correct):not(.jumping) {
-            background-color: #6c757d; 
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
+        /* No specific styling for :disabled:not(.correct):not(.teleported) needed if they remain active */
+        
         #quizFeedback {
             font-size: 1.2em;
             margin-top: 20px;
@@ -334,14 +332,12 @@
         }
         #quizCompletionMessage {
             font-size: 1.6em;
-            color: #007bff; /* Default blue for final completion */
+            color: #007bff; 
             font-weight: bold;
         }
         .chat-container.theme-rose #quizCompletionMessage {
-             color: #E91E63; /* Rose for Mẫn quiz completion */
+             color: #E91E63; 
         }
-
-
     </style>
 </head>
 <body>
@@ -564,7 +560,6 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         }
         
         const scriptData = parseScript(rawScriptText);
-        // --- Quiz Data ---
         const manQuizData = [
             { question: "Mẫn có đẹp không?", choices: ["Có", "Không", "Xấu Quắc", "Có cái l"], correctAnswerText: "Có", feedback: "Tất nhiên là đẹp rồi!" },
             { question: "Mẫn có xinh không?", choices: ["Xấu Quắc", "Có", "Không", "Có cái l"], correctAnswerText: "Có", feedback: "Xinh hết phần thiên hạ!" },
@@ -585,7 +580,6 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             { question: "Mẫn có hát hay không?", choices: ["Có cái l", "Không", "Có", "Xấu Quắc"], correctAnswerText: "Có", feedback: "Ca sĩ tiềm năng!" },
             { question: "Mẫn có xấu không?", choices: ["Có", "Không", "Xấu Quắc", "Có cái l"], correctAnswerText: "Không", feedback: "Sao mà xấu được?" }
         ];
-
         const tiemCuonLenQuizData = [
             { question: "Tiệm Cuộn Len có móc len đẹp không?", choices: ["Quá đỉnh", "Tạm được", "Xấu tệ", "Không biết"], correctAnswerText: "Quá đỉnh", feedback: "Đẹp xuất sắc, không có chỗ chê!" },
             { question: "Shop có ship hàng nhanh không?", choices: ["Như một cơn gió", "Hơi lâu", "Chờ mòn mỏi", "Tùy hứng"], correctAnswerText: "Như một cơn gió", feedback: "Nhanh như cách người yêu cũ trở mặt!" },
@@ -598,14 +592,12 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             { question: "Shop có hay có khuyến mãi không?", choices: ["Thường xuyên", "Ít lắm", "Chưa thấy bao giờ", "Chỉ giảm giá cho người quen"], correctAnswerText: "Thường xuyên", feedback: "Săn sale là nghề của chúng ta!" },
             { question: "Feedback của khách hàng về Tiệm Cuộn Len thế nào?", choices: ["Toàn khen", "50/50", "Toàn chê", "Không đọc"], correctAnswerText: "Toàn khen", feedback: "Uy tín tạo nên thương hiệu!" },
             { question: "Tiệm Cuộn Len có đáng để theo dõi không?", choices: ["Chắc chắn rồi", "Để xem đã", "Chắc là không", "Tùy tâm trạng"], correctAnswerText: "Chắc chắn rồi", feedback: "Theo dõi ngay để không bỏ lỡ siêu phẩm!" },
-             { question: "Chủ shop có hay quên đơn hàng không?", choices: ["Không bao giờ", "Thỉnh thoảng", "Như cơm bữa", "Quên là nghề của chị"], correctAnswerText: "Không bao giờ", feedback: "Trí nhớ siêu phàm, đơn nào cũng nhớ!" }
+            { question: "Chủ shop có hay quên đơn hàng không?", choices: ["Không bao giờ", "Thỉnh thoảng", "Như cơm bữa", "Quên là nghề của chị"], correctAnswerText: "Không bao giờ", feedback: "Trí nhớ siêu phàm, đơn nào cũng nhớ!" }
         ];
-
-        let currentQuizSet = manQuizData; // Start with Mẫn's quiz
+        let currentQuizSet = manQuizData; 
         let currentQuizQuestionIndex = 0;
-        let quizActive = false; // General flag for when any quiz is active
-        // --- End Quiz Data ---
-
+        let quizActive = false; 
+        let currentTeleportedButtons = []; // Keep track of teleported buttons in the current question
 
         let currentSceneIndex = 0, currentMessageInScene = 0, manAvatarCurrent = "images/HueMan.jpg", manNicknameGlobal = "Mẫn";
         let hieuMessageQueue = [];
@@ -723,14 +715,14 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         function processNextMessage() {
             const scene = scriptData[currentSceneIndex];
             if (!scene) { 
-                switchToQuiz(manQuizData, "Câu hỏi về Mẫn", "Mẫn", true); // Start Mẫn's quiz if no more scenes
+                switchToQuiz(manQuizData, "Câu hỏi về Mẫn", "Mẫn", true); 
                 return; 
             }
             if (currentMessageInScene >= scene.messages.length && hieuMessageQueue.length === 0) {
                 if (currentSceneIndex < scriptData.length - 1) {
                     updateNextSceneButtonVisibility();
                 } else { 
-                    switchToQuiz(manQuizData, "Câu hỏi về Mẫn", "Mẫn", true); // Start Mẫn's quiz after the last scene
+                    switchToQuiz(manQuizData, "Câu hỏi về Mẫn", "Mẫn", true); 
                 }
                 return;
             }
@@ -785,12 +777,11 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             manAvatarCurrent = MAN_AVATAR_DEFAULT; 
             hideTypingIndicator(); nextSceneButton.style.display = 'none';
             chatMessagesDiv.innerHTML = ''; hieuActionsDiv.innerHTML = '';
-            quizContainer.style.display = 'none'; // Hide quiz when loading a scene
-            chatMessagesDiv.style.display = 'flex'; // Show chat messages
+            quizContainer.style.display = 'none'; 
+            chatMessagesDiv.style.display = 'flex'; 
             hieuActionsDiv.style.display = 'flex';
             navigationArea.style.display = 'flex';
             quizActive = false;
-
 
             if (currentSceneIndex >= scriptData.length) {
                 switchToQuiz(manQuizData, "Câu hỏi về Mẫn", "Mẫn", true);
@@ -827,6 +818,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             quizActive = true;
             currentQuizSet = quizDataset;
             currentQuizQuestionIndex = 0;
+            currentTeleportedButtons = []; // Reset for the new quiz set
 
             chatMessagesDiv.style.display = 'none';
             hieuActionsDiv.style.display = 'none';
@@ -841,7 +833,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             if (isManQuiz) {
                 chatContainer.classList.add('theme-rose');
             } else {
-                chatContainer.classList.remove('theme-rose'); // Default theme for Tiệm Cuộn Len quiz
+                chatContainer.classList.remove('theme-rose'); 
             }
             displayQuizQuestion();
         }
@@ -849,8 +841,10 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         function displayQuizQuestion() {
             quizFeedbackEl.textContent = '';
             quizCompletionMessageEl.style.display = 'none';
-            quizQuestionEl.style.display = 'block'; // Ensure question is visible
-            quizChoicesEl.style.display = 'grid';   // Ensure choices are visible
+            quizQuestionEl.style.display = 'block'; 
+            quizChoicesEl.style.display = 'grid';  
+            currentTeleportedButtons = []; // Reset teleported buttons for new question
+
 
             if (currentQuizQuestionIndex < currentQuizSet.length) {
                 const q = currentQuizSet[currentQuizQuestionIndex];
@@ -868,67 +862,103 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                 });
             } else {
                 if (currentQuizSet === manQuizData) {
-                    // Finished Mẫn's quiz, start Tiệm Cuộn Len's quiz
                     switchToQuiz(tiemCuonLenQuizData, "Câu hỏi về Tiệm Cuộn Len", "Tiệm Cuộn Len", false);
                 } else {
-                    // Finished Tiệm Cuộn Len's quiz (final end)
                     endAllQuizzes();
                 }
             }
         }
 
         function handleQuizAnswer(selectedChoiceText, clickedButton, correctAnswerText, feedback) {
-            const allChoiceButtons = quizChoicesEl.querySelectorAll('.quiz-choice-button');
-            let correctButtonElement = null;
-            allChoiceButtons.forEach(btn => {
-                if (btn.textContent === correctAnswerText) {
-                    correctButtonElement = btn;
-                }
-                btn.disabled = true; // Disable all buttons once an answer is clicked
-            });
+            const allChoiceButtons = Array.from(quizChoicesEl.querySelectorAll('.quiz-choice-button'));
+            const correctButtonElement = allChoiceButtons.find(btn => btn.textContent === correctAnswerText);
 
             if (selectedChoiceText === correctAnswerText) {
                 quizFeedbackEl.textContent = feedback;
                 quizFeedbackEl.style.color = '#28a745'; 
                 clickedButton.classList.add('correct');
+                allChoiceButtons.forEach(btn => btn.disabled = true); 
                 
                 setTimeout(() => {
                     currentQuizQuestionIndex++;
                     displayQuizQuestion();
                 }, QUIZ_FEEDBACK_DELAY);
             } else {
-                quizFeedbackEl.textContent = 'Sai rồi! Thử lại xem nào!';
-                quizFeedbackEl.style.color = '#dc3545'; 
+                quizFeedbackEl.textContent = ''; // No wrong answer feedback text
                 
-                clickedButton.classList.add('jumping');
-                // Re-enable other buttons EXCEPT the wrong one and the correct one
-                allChoiceButtons.forEach(btn => {
-                    if (btn !== clickedButton && btn !== correctButtonElement) {
-                        btn.disabled = false;
-                    }
-                });
-                correctButtonElement.disabled = false; // Ensure correct button is re-enabled for next try
+                // Only disable the clicked wrong button
+                clickedButton.disabled = true; 
+                clickedButton.classList.add('teleported'); // Mark as teleported for styling (e.g., red color)
 
+                // Teleport logic
                 const choicesRect = quizChoicesEl.getBoundingClientRect();
-                const buttonRect = clickedButton.getBoundingClientRect();
+                const buttonStyle = getComputedStyle(clickedButton);
+                const buttonWidth = parseFloat(buttonStyle.width);
+                const buttonHeight = parseFloat(buttonStyle.height);
+                
                 let randomTop, randomLeft, attempts = 0;
-                const maxAttempts = 20; 
-                function isOverlapping(elem1Rect, elem2Rect) {
-                    if (!elem1Rect || !elem2Rect) return false;
-                    return !(elem1Rect.right < elem2Rect.left || elem1Rect.left > elem2Rect.right || elem1Rect.bottom < elem2Rect.top || elem1Rect.top > elem2Rect.bottom);
+                const maxAttempts = 50; // Increased attempts for better placement
+
+                // Get rects of all OTHER buttons (correct and other wrong ones, including already teleported ones)
+                const otherButtonElements = allChoiceButtons.filter(btn => btn !== clickedButton);
+                const occupiedRects = otherButtonElements.map(btn => btn.getBoundingClientRect());
+                if (correctButtonElement && correctButtonElement !== clickedButton) {
+                     // Ensure correctButtonElement's rect is considered if it's not the clicked one
                 }
+
+
                 do {
-                    randomTop = Math.random() * (choicesRect.height - buttonRect.height);
-                    randomLeft = Math.random() * (choicesRect.width - buttonRect.width);
-                    const newRect = { top: choicesRect.top + randomTop, left: choicesRect.left + randomLeft, right: choicesRect.left + randomLeft + buttonRect.width, bottom: choicesRect.top + randomTop + buttonRect.height, width: buttonRect.width, height: buttonRect.height };
-                    if (!isOverlapping(newRect, correctButtonElement ? correctButtonElement.getBoundingClientRect() : null)) break; 
+                    randomTop = Math.random() * (choicesRect.height - buttonHeight);
+                    randomLeft = Math.random() * (choicesRect.width - buttonWidth);
+                    
+                    const newRect = {
+                        top: choicesRect.top + randomTop, // Position relative to viewport for checking
+                        left: choicesRect.left + randomLeft,
+                        right: choicesRect.left + randomLeft + buttonWidth,
+                        bottom: choicesRect.top + randomTop + buttonHeight,
+                        width: buttonWidth,
+                        height: buttonHeight
+                    };
+                    
+                    let isOverlappingOther = false;
+                    for (const rect of occupiedRects) {
+                        if (isOverlapping(newRect, rect)) {
+                            isOverlappingOther = true;
+                            break;
+                        }
+                    }
+                     // Also check against the correct button if it's not the one being moved
+                    if (correctButtonElement && correctButtonElement !== clickedButton && isOverlapping(newRect, correctButtonElement.getBoundingClientRect())) {
+                        isOverlappingOther = true;
+                    }
+
+
+                    if (!isOverlappingOther) {
+                        break; 
+                    }
                     attempts++;
                 } while (attempts < maxAttempts);
+
+                // Apply new position relative to the #quizChoices container
                 clickedButton.style.position = 'absolute';
                 clickedButton.style.top = `${randomTop}px`;
                 clickedButton.style.left = `${randomLeft}px`;
+                
+                if (!currentTeleportedButtons.includes(clickedButton)) {
+                    currentTeleportedButtons.push(clickedButton);
+                }
             }
         }
+        
+        // Helper function to check for overlap between two rectangles
+        function isOverlapping(rect1, rect2) {
+            if (!rect1 || !rect2) return false;
+            return !(rect1.right < rect2.left || 
+                     rect1.left > rect2.right || 
+                     rect1.bottom < rect2.top || 
+                     rect1.top > rect2.bottom);
+        }
+
 
         function endAllQuizzes() {
             quizQuestionEl.style.display = 'none';
@@ -936,13 +966,13 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             quizFeedbackEl.style.display = 'none';
             quizCompletionMessageEl.textContent = `Chúc mừng đã hoàn thành tất cả Quiz! Bạn thật là hiểu Mẫn và Tiệm Cuộn Len đó!`;
             quizCompletionMessageEl.style.display = 'block';
-            quizCompletionMessageEl.style.color = '#007bff'; // Final completion message in blue
+            quizCompletionMessageEl.style.color = '#007bff'; 
 
-            headerNameSpan.textContent = "Hoàn Thành!"; // General completion title
-            headerAvatarImg.src = getAvatar("Mẫn", true); // Default to Mẫn's avatar at the very end
+            headerNameSpan.textContent = "Hoàn Thành!"; 
+            headerAvatarImg.src = getAvatar("Mẫn", true); 
             headerAvatarImg.alt = "Hoàn thành Avatar";
             headerAvatarImg.style.display = 'block';
-            chatContainer.classList.remove('theme-rose'); // Reset to default theme at the very end
+            chatContainer.classList.remove('theme-rose'); 
         }
         
         const purifyScript = document.createElement('script');
