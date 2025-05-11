@@ -16,7 +16,7 @@
             justify-content: center;
             min-height: 100vh;
             color: #050505;
-            touch-action: none; /* Prevent default touch actions like scrolling during drag */
+            touch-action: manipulation; /* Allow default touch actions like pinch-zoom */
         }
         .chat-container {
             width: 95%;
@@ -277,114 +277,6 @@
             transform: translateY(0px);
         }
 
-
-        /* Quiz Styles */
-        #quizContainer {
-            padding: 20px;
-            text-align: center;
-            flex-grow: 1; 
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around; 
-            overflow: hidden; 
-            position: relative; 
-        }
-        #quizQuestion {
-            font-size: 1.5em;
-            margin-bottom: 20px; 
-            color: #333;
-        }
-        #bowTieContainer { 
-            height: 60px; 
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        #bowTie {
-            width: 50px;
-            height: 30px;
-            background-color: #ff69b4; 
-            border: 2px solid #c71585;
-            border-radius: 5px; 
-            cursor: grab;
-            position: relative; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.8em;
-            color: white;
-            user-select: none; 
-        }
-        #bowTie:before, #bowTie:after { 
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 40px;
-            background-color: #ff69b4;
-            border: 2px solid #c71585;
-            border-radius: 5px 15px 15px 5px;
-        }
-        #bowTie:before { left: -15px; transform: rotate(-15deg); }
-        #bowTie:after { right: -15px; transform: rotate(15deg); }
-
-        #bowTie.dragging {
-            cursor: grabbing;
-            z-index: 1000; 
-            opacity: 0.8;
-        }
-
-        #answerTargetsContainer {
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 20px; 
-            position: relative; 
-            padding: 10px;
-        }
-        .answer-target {
-            background-color: #007bff; 
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 0.9em;
-            min-height: 50px; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.2s, transform 0.2s ease-out; 
-            position: relative; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .answer-target.correct-answer-hover { 
-            background-color: #28a745 !important; 
-            transform: scale(1.05);
-        }
-         .answer-target.fleeing {
-            /* No specific fleeing style, movement is JS driven */
-        }
-        .chat-container.theme-rose #answerTargetsContainer .answer-target {
-             background-color: #C2185B; 
-        }
-        .chat-container.theme-rose #answerTargetsContainer .answer-target.correct-answer-hover {
-             background-color: #AD1457;
-        }
-        
-        #quizFeedback {
-            font-size: 1.2em;
-            margin-top: 20px;
-            color: #28a745;
-            font-weight: bold;
-            min-height: 30px; 
-        }
-        #quizCompletionMessage {
-            font-size: 1.6em;
-            color: #007bff; 
-            font-weight: bold;
-        }
-        .chat-container.theme-rose #quizCompletionMessage {
-             color: #E91E63; 
-        }
-
         /* Responsive Adjustments */
         @media (max-width: 600px) {
             .chat-header { font-size: 1em; padding: 8px 12px; }
@@ -393,26 +285,13 @@
             .avatar { width: 28px; height: 28px; }
             .hieu-button { font-size: 0.9em; padding: 9px 12px; }
             .nav-button { font-size: 0.85em; padding: 8px 15px; }
-            #quizQuestion { font-size: 1.3em; margin-bottom: 15px; }
-            #bowTieContainer { height: 50px; margin-bottom: 15px; }
-            #bowTie { width: 40px; height: 25px; }
-            #bowTie:before, #bowTie:after { width: 15px; height: 30px; }
-            #bowTie:before { left: -12px; }
-            #bowTie:after { right: -12px; }
-            #answerTargetsContainer { grid-template-columns: 1fr; gap: 10px; }
-            .answer-target { font-size: 0.85em; padding: 12px; }
-            #quizFeedback { font-size: 1.1em; }
-            #quizCompletionMessage { font-size: 1.4em; }
             .message-content-wrapper { max-width: 85%; }
         }
          @media (max-width: 400px) {
             .chat-header { font-size: 0.9em; }
-            .message-bubble { font-size: 0.85em; }
+             .message-bubble { font-size: 0.85em; }
             .hieu-button, .nav-button { font-size: 0.8em; }
-            .answer-target { font-size: 0.8em; }
-            #quizQuestion { font-size: 1.1em; }
         }
-
     </style>
 </head>
 <body>
@@ -426,17 +305,7 @@
         <div class="navigation-area" id="navigationArea">
             <button class="nav-button" id="nextSceneButton" style="display: none;" role="button" aria-label="Chuyển đến cảnh tiếp theo">Cảnh Tiếp</button>
         </div>
-        <div id="quizContainer" style="display: none;" aria-hidden="true" role="region" aria-label="Phần đố vui">
-            <h2 id="quizQuestion"></h2>
-            <div id="bowTieContainer">
-                <div id="bowTie" role="button" aria-grabbed="false" tabindex="0" aria-label="Kéo chiếc nơ này">Nơ</div>
-            </div>
-            <div id="answerTargetsContainer" role="listbox" aria-labelledby="quizQuestion">
-                {/* Các mục tiêu trả lời sẽ được tạo ở đây bằng JavaScript */}
-            </div>
-            <p id="quizFeedback" aria-live="assertive" aria-atomic="true"></p>
-            <p id="quizCompletionMessage" style="display: none;" aria-live="assertive" aria-atomic="true"></p>
-        </div>
+        {/* Quiz container and its children are removed */}
     </div>
 
     <script>
@@ -566,14 +435,9 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         const MESSAGE_CONTINUOUS_DELAY = 700; 
         const HIEU_POST_MESSAGE_DELAY = 500; 
         const SYSTEM_MESSAGE_DELAY = 1000; 
-        const QUIZ_FEEDBACK_DELAY = 1500;
-        const BOW_TIE_AVOIDANCE_RADIUS = 75; 
-        const BOW_TIE_FLEE_SPEED = 3; 
+        // Removed QUIZ_FEEDBACK_DELAY, BOW_TIE_AVOIDANCE_RADIUS, BOW_TIE_FLEE_DISTANCE_FACTOR
 
-        // Cheat code variables
-        let zKeyPressCount = 0;
-        let zKeyTimer = null;
-        const Z_KEY_RESET_TIMEOUT = 1000; // 1 second
+        // Removed zKeyPressCount, zKeyTimer, Z_KEY_RESET_TIMEOUT (cheat code for quiz)
 
         function slugify(text) {
             if (typeof text !== 'string') return '';
@@ -647,48 +511,8 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         }
         
         const scriptData = parseScript(rawScriptText);
-        const manQuizData = [
-            { question: "Mẫn có đẹp không?", choices: ["Có", "Không", "Xấu Quắc", "Có cái l"], correctAnswerText: "Có", feedback: "Tất nhiên là đẹp rồi!" },
-            { question: "Mẫn có xinh không?", choices: ["Xấu Quắc", "Có", "Không", "Có cái l"], correctAnswerText: "Có", feedback: "Xinh hết phần thiên hạ!" },
-            { question: "Mẫn có dễ thương không?", choices: ["Có cái l", "Xấu Quắc", "Có", "Không"], correctAnswerText: "Có", feedback: "Dễ thương vô đối!" },
-            { question: "Mẫn có tuyệt vời không?", choices: ["Không", "Có", "Xấu Quắc", "Có cái l"], correctAnswerText: "Có", feedback: "Quá tuyệt vời luôn phải không?" },
-            { question: "Mẫn có giỏi không?", choices: ["Có", "Không", "Có cái l", "Xấu Quắc"], correctAnswerText: "Có", feedback: "Siêu giỏi luôn ấy chứ!" },
-            { question: "Mẫn có giàu không?", choices: ["Xấu Quắc", "Không", "Có", "Có cái l"], correctAnswerText: "Có", feedback: "Giàu tình cảm và cả vật chất!" },
-            { question: "Mẫn có tốt bụng không?", choices: ["Có cái l", "Có", "Không", "Xấu Quắc"], correctAnswerText: "Có", feedback: "Tốt không ai bằng!" },
-            { question: "Mẫn có thông minh không?", choices: ["Không", "Xấu Quắc", "Có cái l", "Có"], correctAnswerText: "Có", feedback: "Thông minh xuất chúng!" },
-            { question: "Mẫn có duyên dáng không?", choices: ["Có", "Không", "Xấu Quắc", "Có cái l"], correctAnswerText: "Có", feedback: "Duyên dáng ngất ngây!" },
-            { question: "Mẫn có hài hước không?", choices: ["Có cái l", "Không", "Có", "Xấu Quắc"], correctAnswerText: "Có", feedback: "Nói chuyện là chỉ có cười!" },
-            { question: "Mẫn có đảm đang không?", choices: ["Không", "Có", "Xấu Quắc", "Có cái l"], correctAnswerText: "Có", feedback: "Đảm đang số một!" },
-            { question: "Mẫn có kiên cường không?", choices: ["Có", "Không", "Có cái l", "Xấu Quắc"], correctAnswerText: "Có", feedback: "Rất kiên cường và mạnh mẽ!" },
-            { question: "Mẫn có đáng yêu không?", choices: ["Xấu Quắc", "Không", "Có", "Có cái l"], correctAnswerText: "Có", feedback: "Đáng yêu muốn xỉu!" },
-            { question: "Mẫn có tài năng không?", choices: ["Có cái l", "Có", "Không", "Xấu Quắc"], correctAnswerText: "Có", feedback: "Tài năng đầy mình!" },
-            { question: "Mẫn có phong cách không?", choices: ["Không", "Xấu Quắc", "Có cái l", "Có"], correctAnswerText: "Có", feedback: "Phong cách cực chất!" },
-            { question: "Mẫn có nấu ăn ngon không?", choices: ["Có", "Không", "Xấu Quắc", "Có cái l"], correctAnswerText: "Có", feedback: "Đầu bếp tài ba!" },
-            { question: "Mẫn có hát hay không?", choices: ["Có cái l", "Không", "Có", "Xấu Quắc"], correctAnswerText: "Có", feedback: "Ca sĩ tiềm năng!" },
-            { question: "Mẫn có xấu không?", choices: ["Có", "Không", "Xấu Quắc", "Có cái l"], correctAnswerText: "Không", feedback: "Sao mà xấu được?" }
-        ];
-        const tiemCuonLenQuizData = [
-            { question: "Tiệm Cuộn Len có móc len đẹp không?", choices: ["Quá đỉnh", "Tạm được", "Xấu tệ", "Không biết"], correctAnswerText: "Quá đỉnh", feedback: "Đẹp xuất sắc, không có chỗ chê!" },
-            { question: "Shop có ship hàng nhanh không?", choices: ["Như một cơn gió", "Hơi lâu", "Chờ mòn mỏi", "Tùy hứng"], correctAnswerText: "Như một cơn gió", feedback: "Nhanh như cách người yêu cũ trở mặt!" },
-            { question: "Chủ shop Tiệm Cuộn Len có dịu dàng không?", choices: ["Có chứ", "Hơi dữ", "Như sư tử", "Không quan tâm"], correctAnswerText: "Có chứ", feedback: "Dịu dàng như nước cất, nhưng đừng chọc nha!" },
-            { question: "Sản phẩm của Tiệm Cuộn Len có độc đáo không?", choices: ["Độc nhất vô nhị", "Cũng thường", "Đụng hàng đầy", "Không rõ"], correctAnswerText: "Độc nhất vô nhị", feedback: "Mỗi sản phẩm là một tác phẩm nghệ thuật!" },
-            { question: "Giá cả ở Tiệm Cuộn Len có hợp lý không?", choices: ["Rất phải chăng", "Hơi chát", "Đắt xắt ra miếng", "Miễn đẹp là được"], correctAnswerText: "Rất phải chăng", feedback: "Chất lượng vượt xa giá tiền!" },
-            { question: "Tiệm Cuộn Len có hay ra mẫu mới không?", choices: ["Liên tục", "Thỉnh thoảng", "Hiếm lắm", "Toàn mẫu cũ"], correctAnswerText: "Liên tục", feedback: "Trend nào cũng có, mẫu nào cũng chiều!" },
-            { question: "Chất liệu len của shop có tốt không?", choices: ["Mềm mịn xịn", "Hơi ngứa", "Như bao bố", "Không để ý"], correctAnswerText: "Mềm mịn xịn", feedback: "Sờ vào là chỉ có mê!" },
-            { question: "Tiệm Cuộn Len có nhận đặt hàng theo yêu cầu không?", choices: ["Thoải mái đi", "Hạn chế lắm", "Không nhận", "Hên xui"], correctAnswerText: "Thoải mái đi", feedback: "Khách là thượng đế, yêu cầu nào cũng cân!" },
-            { question: "Shop có hay có khuyến mãi không?", choices: ["Thường xuyên", "Ít lắm", "Chưa thấy bao giờ", "Chỉ giảm giá cho người quen"], correctAnswerText: "Thường xuyên", feedback: "Săn sale là nghề của chúng ta!" },
-            { question: "Feedback của khách hàng về Tiệm Cuộn Len thế nào?", choices: ["Toàn khen", "50/50", "Toàn chê", "Không đọc"], correctAnswerText: "Toàn khen", feedback: "Uy tín tạo nên thương hiệu!" },
-            { question: "Tiệm Cuộn Len có đáng để theo dõi không?", choices: ["Chắc chắn rồi", "Để xem đã", "Chắc là không", "Tùy tâm trạng"], correctAnswerText: "Chắc chắn rồi", feedback: "Theo dõi ngay để không bỏ lỡ siêu phẩm!" },
-            { question: "Chủ shop có hay quên đơn hàng không?", choices: ["Không bao giờ", "Thỉnh thoảng", "Như cơm bữa", "Quên là nghề của chị"], correctAnswerText: "Không bao giờ", feedback: "Trí nhớ siêu phàm, đơn nào cũng nhớ!" }
-        ];
-        let currentQuizSet = manQuizData; 
-        let currentQuizQuestionIndex = 0;
-        let quizActive = false; 
-        let bowTieElement, answerTargetElements = [], isDraggingBowTie = false;
-        let bowTieOffsetX, bowTieOffsetY;
-        let bowTieInitialX, bowTieInitialY; 
-        let animationFrameId;
-
+        // Removed quizData arrays (manQuizData, tiemCuonLenQuizData)
+        // Removed quiz-related state variables (currentQuizSet, currentQuizQuestionIndex, quizActive, bowTieElement, etc.)
 
         let currentSceneIndex = 0, currentMessageInScene = 0, manAvatarCurrent = "images/HueMan.jpg", manNicknameGlobal = "Mẫn";
         let hieuMessageQueue = [];
@@ -698,13 +522,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         const headerNameSpan = document.getElementById('headerName');
         const chatMessagesDiv = document.getElementById('chatMessages'), hieuActionsDiv = document.getElementById('hieuActions');
         const nextSceneButton = document.getElementById('nextSceneButton');
-        const quizContainer = document.getElementById('quizContainer');
-        const quizQuestionEl = document.getElementById('quizQuestion');
-        const answerTargetsContainerEl = document.getElementById('answerTargetsContainer'); 
-        const quizFeedbackEl = document.getElementById('quizFeedback');
-        const quizCompletionMessageEl = document.getElementById('quizCompletionMessage');
-        const bowTieContainer = document.getElementById('bowTieContainer');
-
+        // Removed quiz-related element getters
 
         nextSceneButton.onclick = () => { if (currentSceneIndex < scriptData.length - 1) loadScene(currentSceneIndex + 1); };
 
@@ -800,10 +618,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         }
 
         function updateNextSceneButtonVisibility() {
-            if (quizActive) { 
-                nextSceneButton.style.display = 'none';
-                return;
-            }
+            // No quizActive check needed as quiz is removed
             if (currentSceneIndex < scriptData.length - 1) { nextSceneButton.style.display = 'block'; nextSceneButton.disabled = false; }
             else nextSceneButton.style.display = 'none';
         }
@@ -811,14 +626,27 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         function processNextMessage() {
             const scene = scriptData[currentSceneIndex];
             if (!scene) { 
-                switchToQuiz(manQuizData, "Câu hỏi về Mẫn", "Mẫn", true); 
+                // End of script - behavior when no more scenes
+                headerNameSpan.textContent = manNicknameGlobal; // Show Mẫn's name at true end
+                headerAvatarImg.src = getAvatar("Mẫn", true);
+                headerAvatarImg.alt = manNicknameGlobal + " Avatar";
+                headerAvatarImg.style.display = 'block';
+                chatContainer.classList.add('theme-rose'); // Ensure Mẫn's theme at the very end
+                nextSceneButton.style.display = 'none'; 
+                hieuActionsDiv.innerHTML = ''; // Clear any remaining Hieu buttons
                 return; 
             }
             if (currentMessageInScene >= scene.messages.length && hieuMessageQueue.length === 0) {
                 if (currentSceneIndex < scriptData.length - 1) {
                     updateNextSceneButtonVisibility();
-                } else { 
-                    switchToQuiz(manQuizData, "Câu hỏi về Mẫn", "Mẫn", true); 
+                } else { // End of all scenes
+                    headerNameSpan.textContent = manNicknameGlobal; 
+                    headerAvatarImg.src = getAvatar("Mẫn", true); 
+                    headerAvatarImg.alt = manNicknameGlobal + " Avatar";
+                    headerAvatarImg.style.display = 'block';
+                    chatContainer.classList.add('theme-rose'); 
+                    hieuActionsDiv.innerHTML = '';
+                    nextSceneButton.style.display = 'none';
                 }
                 return;
             }
@@ -879,15 +707,23 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             manAvatarCurrent = MAN_AVATAR_DEFAULT; 
             hideTypingIndicator(); nextSceneButton.style.display = 'none';
             chatMessagesDiv.innerHTML = ''; hieuActionsDiv.innerHTML = '';
-            quizContainer.style.display = 'none'; 
-            quizContainer.setAttribute('aria-hidden', 'true');
+            // Ensure quiz related elements are hidden if they were ever shown
+            const quizContainerEl = document.getElementById('quizContainer');
+            if (quizContainerEl) quizContainerEl.style.display = 'none'; 
+            
             chatMessagesDiv.style.display = 'flex'; 
             hieuActionsDiv.style.display = 'flex';
             navigationArea.style.display = 'flex';
-            quizActive = false;
+            // quizActive = false; // quizActive is no longer used
 
             if (currentSceneIndex >= scriptData.length) {
-                switchToQuiz(manQuizData, "Câu hỏi về Mẫn", "Mẫn", true);
+                headerNameSpan.textContent = manNicknameGlobal; 
+                headerAvatarImg.src = getAvatar("Mẫn", true); 
+                headerAvatarImg.alt = manNicknameGlobal + " Avatar";
+                headerAvatarImg.style.display = 'block';
+                chatContainer.classList.add('theme-rose'); 
+                nextSceneButton.style.display = 'none';
+                hieuActionsDiv.innerHTML = ''; // Clear Hieu actions at the very end
                 return;
             }
             const scene = scriptData[currentSceneIndex];
@@ -915,320 +751,17 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
 
             processNextMessage();
         }
-
-        // --- Quiz Functions (Drag and Drop Bow Tie) ---
-        function switchToQuiz(quizDataset, quizTitle, quizSubjectName, isManQuiz) {
-            quizActive = true;
-            currentQuizSet = quizDataset;
-            currentQuizQuestionIndex = 0;
-            
-            chatMessagesDiv.style.display = 'none';
-            hieuActionsDiv.style.display = 'none';
-            navigationArea.style.display = 'none';
-            quizContainer.style.display = 'flex';
-            quizContainer.setAttribute('aria-hidden', 'false');
-
-            headerNameSpan.textContent = quizTitle;
-            headerAvatarImg.src = getAvatar(quizSubjectName, true);
-            headerAvatarImg.alt = getDisplayName(quizSubjectName) + " Avatar";
-            headerAvatarImg.style.display = 'block';
-            
-            if (isManQuiz) chatContainer.classList.add('theme-rose');
-            else chatContainer.classList.remove('theme-rose'); 
-            
-            quizQuestionEl.focus(); 
-            displayQuizQuestion();
-        }
-
-        function displayQuizQuestion() {
-            quizFeedbackEl.textContent = '';
-            quizCompletionMessageEl.style.display = 'none';
-            quizQuestionEl.style.display = 'block'; 
-            answerTargetsContainerEl.style.display = 'grid';  
-            bowTieContainer.style.display = 'flex';
-
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-
-            if (currentQuizQuestionIndex < currentQuizSet.length) {
-                const q = currentQuizSet[currentQuizQuestionIndex];
-                quizQuestionEl.textContent = q.question;
-                answerTargetsContainerEl.innerHTML = ''; 
-                answerTargetElements = []; 
-
-                bowTieElement = document.getElementById('bowTie');
-                resetBowTiePosition();
-
-                const shuffledChoices = [...q.choices].sort(() => Math.random() - 0.5);
-
-                shuffledChoices.forEach(choiceText => {
-                    const target = document.createElement('div');
-                    target.classList.add('answer-target');
-                    target.textContent = choiceText;
-                    target.dataset.choiceText = choiceText; 
-                    target.dataset.isCorrect = (choiceText === q.correctAnswerText).toString();
-                    target.setAttribute('role', 'option');
-                    target.setAttribute('aria-label', `Lựa chọn trả lời: ${choiceText}`);
-                    answerTargetsContainerEl.appendChild(target);
-                    answerTargetElements.push({
-                        element: target,
-                        isCorrect: choiceText === q.correctAnswerText,
-                        originalX: 0, // Will be set after layout
-                        originalY: 0,
-                        currentX: 0,
-                        currentY: 0
-                    });
-                });
-                 requestAnimationFrame(() => {
-                    answerTargetElements.forEach(targetInfo => {
-                        // Ensure elements are positioned absolutely within the grid for fleeing
-                        targetInfo.element.style.position = 'absolute'; 
-                        // Get initial positions *after* grid layout, relative to the container
-                        const gridCellRect = targetInfo.element.getBoundingClientRect();
-                        const containerRect = answerTargetsContainerEl.getBoundingClientRect();
-                        targetInfo.originalX = gridCellRect.left - containerRect.left;
-                        targetInfo.originalY = gridCellRect.top - containerRect.top;
-                        targetInfo.currentX = targetInfo.originalX;
-                        targetInfo.currentY = targetInfo.originalY;
-                        targetInfo.element.style.left = targetInfo.originalX + 'px';
-                        targetInfo.element.style.top = targetInfo.originalY + 'px';
-                    });
-                });
-            } else {
-                if (currentQuizSet === manQuizData) {
-                    switchToQuiz(tiemCuonLenQuizData, "Câu hỏi về Tiệm Cuộn Len", "Tiệm Cuộn Len", false);
-                } else {
-                    endAllQuizzes();
-                }
-            }
-        }
         
-        function resetBowTiePosition() {
-            if (bowTieElement) {
-                bowTieElement.classList.remove('dragging');
-                bowTieElement.setAttribute('aria-grabbed', 'false');
-                bowTieElement.style.position = 'relative'; 
-                bowTieElement.style.left = 'auto';
-                bowTieElement.style.top = 'auto';
-                bowTieElement.style.transform = 'translate(0,0)';
-            }
-        }
-
-        function onBowTieMove(event) {
-            if (!isDraggingBowTie || !bowTieElement) return;
-            event.preventDefault(); 
-
-            let clientX, clientY;
-            if (event.touches) {
-                clientX = event.touches[0].clientX;
-                clientY = event.touches[0].clientY;
-            } else {
-                clientX = event.clientX;
-                clientY = event.clientY;
-            }
-            
-            const quizContainerRect = quizContainer.getBoundingClientRect();
-            bowTieElement.style.left = `${clientX - quizContainerRect.left - bowTieOffsetX}px`;
-            bowTieElement.style.top = `${clientY - quizContainerRect.top - bowTieOffsetY}px`;
-        }
-
-        function gameLoop() {
-            if (!quizActive || !isDraggingBowTie) { 
-                if(animationFrameId) cancelAnimationFrame(animationFrameId);
-                return;
-            }
-
-            const bowTieRect = bowTieElement.getBoundingClientRect();
-
-            answerTargetElements.forEach(targetInfo => {
-                const targetElement = targetInfo.element;
-                targetElement.classList.remove('correct-answer-hover', 'fleeing');
-
-                if (!targetInfo.isCorrect) {
-                    const targetRect = targetElement.getBoundingClientRect(); // Current rect of the target
-                    const dx = (targetRect.left + targetRect.width / 2) - (bowTieRect.left + bowTieRect.width / 2);
-                    const dy = (targetRect.top + targetRect.height / 2) - (bowTieRect.top + bowTieRect.height / 2);
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-
-                    if (dist < BOW_TIE_AVOIDANCE_RADIUS) {
-                        targetElement.classList.add('fleeing');
-                        const dirX = dx / dist;
-                        const dirY = dy / dist;
-                        
-                        let newRelativeX = targetInfo.currentX + dirX * BOW_TIE_FLEE_SPEED;
-                        let newRelativeY = targetInfo.currentY + dirY * BOW_TIE_FLEE_SPEED;
-
-                        // Boundary checks within answerTargetsContainerEl
-                        const containerRect = answerTargetsContainerEl.getBoundingClientRect();
-                        
-                        newRelativeX = Math.max(0, Math.min(newRelativeX, containerRect.width - targetRect.width));
-                        newRelativeY = Math.max(0, Math.min(newRelativeY, containerRect.height - targetRect.height));
-                        
-                        // Check for collision with other targets before applying new position
-                        let collisionDetected = false;
-                        const potentialNewRect = {
-                            left: containerRect.left + newRelativeX,
-                            top: containerRect.top + newRelativeY,
-                            right: containerRect.left + newRelativeX + targetRect.width,
-                            bottom: containerRect.top + newRelativeY + targetRect.height
-                        };
-
-                        for (const otherTarget of answerTargetElements) {
-                            if (otherTarget.element !== targetElement) { // Don't check against itself
-                                if (isOverlapping(potentialNewRect, otherTarget.element.getBoundingClientRect())) {
-                                    collisionDetected = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (!collisionDetected) {
-                            targetInfo.currentX = newRelativeX;
-                            targetInfo.currentY = newRelativeY;
-                            targetElement.style.left = `${newRelativeX}px`;
-                            targetElement.style.top = `${newRelativeY}px`;
-                        }
-                    }
-                } else { 
-                    if (isOverlapping(bowTieRect, targetElement.getBoundingClientRect())) {
-                        targetElement.classList.add('correct-answer-hover');
-                    }
-                }
-            });
-            animationFrameId = requestAnimationFrame(gameLoop);
-        }
-
-
-        function onBowTieEnd(event) {
-            if (!isDraggingBowTie || !bowTieElement) return;
-            isDraggingBowTie = false;
-            bowTieElement.classList.remove('dragging');
-            bowTieElement.setAttribute('aria-grabbed', 'false');
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-
-            const bowTieRect = bowTieElement.getBoundingClientRect();
-            let droppedOnCorrect = false;
-
-            answerTargetElements.forEach(targetInfo => {
-                targetInfo.element.classList.remove('correct-answer-hover');
-                if (targetInfo.isCorrect && isOverlapping(bowTieRect, targetInfo.element.getBoundingClientRect())) {
-                    droppedOnCorrect = true;
-                    quizFeedbackEl.textContent = currentQuizSet[currentQuizQuestionIndex].feedback;
-                    quizFeedbackEl.style.color = '#28a745';
-                    targetInfo.element.classList.add('correct-answer-hover'); 
-                    answerTargetElements.forEach(t => t.element.style.pointerEvents = 'none');
-                    setTimeout(() => {
-                        currentQuizQuestionIndex++;
-                        displayQuizQuestion();
-                    }, QUIZ_FEEDBACK_DELAY);
-                }
-            });
-
-            if (!droppedOnCorrect) {
-                resetBowTiePosition();
-            }
-        }
-        
-        function addBowTieDragListeners() {
-            bowTieElement = document.getElementById('bowTie');
-            if (!bowTieElement) return;
-
-            function onBowTieStart(event) {
-                isDraggingBowTie = true;
-                bowTieElement.classList.add('dragging');
-                bowTieElement.setAttribute('aria-grabbed', 'true');
-                bowTieElement.style.position = 'absolute'; 
-                
-                let clientX, clientY;
-                if (event.touches) {
-                    clientX = event.touches[0].clientX;
-                    clientY = event.touches[0].clientY;
-                } else {
-                    clientX = event.clientX;
-                    clientY = event.clientY;
-                }
-                const bowTieRect = bowTieElement.getBoundingClientRect();
-                bowTieOffsetX = clientX - bowTieRect.left;
-                bowTieOffsetY = clientY - bowTieRect.top;
-
-                const bowTieContainerRect = bowTieContainer.getBoundingClientRect();
-                const quizContainerRect = quizContainer.getBoundingClientRect();
-                bowTieInitialX = bowTieContainerRect.left - quizContainerRect.left + (bowTieContainerRect.width - bowTieRect.width) / 2;
-                bowTieInitialY = bowTieContainerRect.top - quizContainerRect.top + (bowTieContainerRect.height - bowTieRect.height) / 2;
-
-                onBowTieMove(event); 
-                animationFrameId = requestAnimationFrame(gameLoop); 
-            }
-
-            bowTieElement.removeEventListener('mousedown', onBowTieStart); 
-            bowTieElement.removeEventListener('touchstart', onBowTieStart);
-            bowTieElement.addEventListener('mousedown', onBowTieStart);
-            bowTieElement.addEventListener('touchstart', onBowTieStart, { passive: false });
-        }
-        
-        document.addEventListener('mousemove', onBowTieMove);
-        document.addEventListener('touchmove', onBowTieMove, { passive: false });
-        document.addEventListener('mouseup', onBowTieEnd);
-        document.addEventListener('touchend', onBowTieEnd);
-
-
-        function isOverlapping(rect1, rect2) {
-            if (!rect1 || !rect2) return false;
-            const buffer = 1; 
-            return !(rect1.right - buffer < rect2.left + buffer || 
-                     rect1.left + buffer > rect2.right - buffer || 
-                     rect1.bottom - buffer < rect2.top + buffer || 
-                     rect1.top + buffer > rect2.bottom - buffer);
-        }
-
-        function endAllQuizzes() {
-            quizQuestionEl.style.display = 'none';
-            answerTargetsContainerEl.style.display = 'none';
-            bowTieContainer.style.display = 'none';
-            quizFeedbackEl.style.display = 'none';
-            quizCompletionMessageEl.textContent = `Chúc mừng đã hoàn thành tất cả Quiz! Bạn thật là hiểu Mẫn và Tiệm Cuộn Len đó!`;
-            quizCompletionMessageEl.style.display = 'block';
-            quizCompletionMessageEl.style.color = '#007bff'; 
-            quizCompletionMessageEl.focus();
-
-            headerNameSpan.textContent = "Hoàn Thành!"; 
-            headerAvatarImg.src = getAvatar("Mẫn", true); 
-            headerAvatarImg.alt = "Hoàn thành Avatar";
-            headerAvatarImg.style.display = 'block';
-            chatContainer.classList.remove('theme-rose'); 
-        }
-        
-        // Cheat code to jump to quiz
-        document.addEventListener('keydown', function(event) {
-            if (event.key.toLowerCase() === 'z') {
-                zKeyPressCount++;
-                clearTimeout(zKeyTimer);
-                zKeyTimer = setTimeout(() => {
-                    zKeyPressCount = 0;
-                }, Z_KEY_RESET_TIMEOUT);
-
-                if (zKeyPressCount === 3) {
-                    zKeyPressCount = 0; // Reset after activation
-                    console.log("Cheat code activated: Jumping to quiz!");
-                    // Ensure quiz is not already active to prevent issues
-                    if (!quizActive) {
-                         // Cancel any ongoing scene processing
-                        if (animationFrameId) cancelAnimationFrame(animationFrameId);
-                        // Clear any pending timeouts for message display or scene transition
-                        // This requires tracking timeout IDs, which is not currently done.
-                        // For simplicity, we'll just directly switch.
-                        switchToQuiz(manQuizData, "Câu hỏi về Mẫn", "Mẫn", true);
-                    }
-                }
-            } else {
-                // Reset count if any other key is pressed
-                zKeyPressCount = 0;
-                clearTimeout(zKeyTimer);
-            }
-        });
+        // Removed all Quiz Functions (switchToQuiz, displayQuizQuestion, handleQuizAnswer, endAllQuizzes, addBowTieDragListeners, gameLoop, onBowTieMove, onBowTieEnd, resetBowTiePosition)
+        // Removed cheat code event listener for 'z' key
 
         const purifyScript = document.createElement('script');
         purifyScript.src = "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js";
-        purifyScript.onload = () => { console.log("DOMPurify loaded successfully."); loadScene(0); addBowTieDragListeners(); };
+        purifyScript.onload = () => { 
+            console.log("DOMPurify loaded successfully."); 
+            loadScene(0); 
+            // addBowTieDragListeners(); // This was for the bow-tie quiz, now removed
+        };
         purifyScript.onerror = () => {
             console.error("DOMPurify could not be loaded. HTML content might not be sanitized.");
             if (typeof DOMPurify === 'undefined') {
@@ -1237,7 +770,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                     if (typeof html !== 'string') return ''; return html.replace(/</g, "<").replace(/>/g, ">"); }};
             }
             loadScene(0);
-            addBowTieDragListeners();
+            // addBowTieDragListeners(); // This was for the bow-tie quiz, now removed
         };
         document.head.appendChild(purifyScript);
     </script>
