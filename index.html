@@ -71,13 +71,18 @@
             cursor: pointer;
             text-align: left;
             font-size: 0.95em;
-            transition: background-color 0.3s, opacity 0.2s;
+            transition: background-color 0.3s, opacity 0.2s, transform 0.1s ease-out; /* Added transform for subtle press effect */
             width: 100%;
             box-sizing: border-box;
         }
         .hieu-button:hover:not(:disabled) {
             background-color: #0056b3;
+            transform: translateY(-1px); /* Subtle lift on hover */
         }
+         .hieu-button:active:not(:disabled) {
+            transform: translateY(0px); /* Press down effect */
+        }
+
 
         /* Pink Rose Theme */
         .chat-container.theme-rose .chat-header {
@@ -257,7 +262,7 @@
             cursor: pointer;
             font-size: 0.9em;
             font-weight: 600;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.1s ease-out;
         }
         .nav-button:disabled {
             background-color: #ccd0d5;
@@ -265,7 +270,12 @@
         }
         .nav-button:hover:not(:disabled) {
             opacity: 0.9;
+            transform: translateY(-1px);
         }
+        .nav-button:active:not(:disabled) {
+            transform: translateY(0px);
+        }
+
 
         /* Quiz Styles */
         #quizContainer {
@@ -287,8 +297,8 @@
             grid-template-columns: repeat(2, 1fr); 
             gap: 15px; 
             margin-bottom: 20px;
-            position: relative; /* Crucial for absolute positioning of children */
-            min-height: 150px; /* Ensure space for teleporting buttons */
+            position: relative; 
+            min-height: 150px; 
         }
         .quiz-choice-button {
             background-color: #007bff; 
@@ -298,9 +308,8 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 1em;
-            /* Remove transition for top/left to make teleport instant */
-            transition: background-color 0.2s, transform 0.3s ease-out; 
-            position: relative; /* Default: in the grid flow */
+            transition: background-color 0.2s, transform 0.1s ease-out; 
+            position: relative; 
             z-index: 1;
         }
         .chat-container.theme-rose #quizContainer .quiz-choice-button {
@@ -308,20 +317,25 @@
         }
         .chat-container.theme-rose #quizContainer .quiz-choice-button:hover:not(:disabled) {
              background-color: #AD1457;
+             transform: translateY(-1px);
         }
          .chat-container:not(.theme-rose) #quizContainer .quiz-choice-button:hover:not(:disabled) {
              background-color: #0056b3; 
+             transform: translateY(-1px);
+        }
+        .quiz-choice-button:active:not(:disabled) {
+            transform: translateY(0px);
         }
 
-        .quiz-choice-button.teleported { /* Class for teleported wrong buttons */
-            background-color: #dc3545 !important; /* Red color for wrong teleported button */
-            position: absolute !important; /* Make it absolute to position freely */
-            z-index: 10; /* Ensure it's above others if needed, though grid items won't overlap by default */
+
+        .quiz-choice-button.teleported { 
+            background-color: #dc3545 !important; 
+            position: absolute !important; 
+            z-index: 10; 
         }
          .quiz-choice-button.correct {
             background-color: #28a745 !important; 
         }
-        /* No specific styling for :disabled:not(.correct):not(.teleported) needed if they remain active */
         
         #quizFeedback {
             font-size: 1.2em;
@@ -338,24 +352,86 @@
         .chat-container.theme-rose #quizCompletionMessage {
              color: #E91E63; 
         }
+
+        /* Responsive Adjustments */
+        @media (max-width: 600px) {
+            .chat-header {
+                font-size: 1em;
+                padding: 8px 12px;
+            }
+            .header-avatar {
+                width: 30px;
+                height: 30px;
+                margin-right: 8px;
+            }
+            .message-bubble {
+                font-size: 0.9em;
+                padding: 7px 10px;
+            }
+            .avatar { /* Message avatar */
+                width: 28px;
+                height: 28px;
+            }
+            .hieu-button, .quiz-choice-button {
+                font-size: 0.9em;
+                padding: 9px 12px;
+            }
+            .nav-button {
+                font-size: 0.85em;
+                padding: 8px 15px;
+            }
+            #quizQuestion {
+                font-size: 1.3em;
+                margin-bottom: 20px;
+            }
+            #quizChoices {
+                grid-template-columns: 1fr; /* Single column for quiz choices on small screens */
+                gap: 10px;
+                min-height: 200px; /* Adjust if needed for single column */
+            }
+            #quizFeedback {
+                font-size: 1.1em;
+            }
+            #quizCompletionMessage {
+                font-size: 1.4em;
+            }
+            .message-content-wrapper {
+                max-width: 85%; /* Allow slightly wider messages on small screens */
+            }
+        }
+         @media (max-width: 400px) {
+            .chat-header {
+                font-size: 0.9em;
+            }
+             .message-bubble {
+                font-size: 0.85em;
+            }
+            .hieu-button, .quiz-choice-button, .nav-button {
+                font-size: 0.8em;
+            }
+             #quizQuestion {
+                font-size: 1.1em;
+            }
+        }
+
     </style>
 </head>
 <body>
     <div class="chat-container" id="chatContainer">
-        <div class="chat-header" id="chatHeader">
-            <img src="" alt="Avatar Tiêu đề" class="header-avatar" id="headerAvatar" style="display: none;">
+        <div class="chat-header" id="chatHeader" role="banner">
+            <img src="" alt="Avatar Tiêu đề" class="header-avatar" id="headerAvatar" style="display: none;" loading="lazy">
             <span id="headerName">Đang tải...</span>
         </div>
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="hieu-actions" id="hieuActions"></div>
+        <div class="chat-messages" id="chatMessages" aria-live="polite" aria-atomic="false"></div>
+        <div class="hieu-actions" id="hieuActions" role="group" aria-label="Lựa chọn của Hiếu"></div>
         <div class="navigation-area" id="navigationArea">
-            <button class="nav-button" id="nextSceneButton" style="display: none;">Cảnh Tiếp</button>
+            <button class="nav-button" id="nextSceneButton" style="display: none;" role="button" aria-label="Chuyển đến cảnh tiếp theo">Cảnh Tiếp</button>
         </div>
-        <div id="quizContainer" style="display: none;">
-            <h2 id="quizQuestion"></h2>
-            <div id="quizChoices"></div>
-            <p id="quizFeedback"></p>
-            <p id="quizCompletionMessage" style="display: none;"></p>
+        <div id="quizContainer" style="display: none;" aria-hidden="true" role="region" aria-label="Phần đố vui">
+            <h2 id="quizQuestion" tabindex="-1"></h2> {/* tabindex -1 to allow focus via JS */}
+            <div id="quizChoices" role="grid" aria-labelledby="quizQuestion"></div>
+            <p id="quizFeedback" aria-live="assertive" aria-atomic="true"></p>
+            <p id="quizCompletionMessage" style="display: none;" aria-live="assertive" aria-atomic="true"></p>
         </div>
     </div>
 
@@ -597,7 +673,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         let currentQuizSet = manQuizData; 
         let currentQuizQuestionIndex = 0;
         let quizActive = false; 
-        let currentTeleportedButtons = []; // Keep track of teleported buttons in the current question
+        let currentTeleportedButtons = []; 
 
         let currentSceneIndex = 0, currentMessageInScene = 0, manAvatarCurrent = "images/HueMan.jpg", manNicknameGlobal = "Mẫn";
         let hieuMessageQueue = [];
@@ -633,7 +709,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         function showTypingIndicator(speaker) {
             hideTypingIndicator();
             const speakerDisplayName = getDisplayName(speaker), avatarSrc = getAvatar(speaker);
-            const indicatorHTML = `<div class="message-row other-speaker typing-indicator-row" id="typingIndicatorActive"><div class="message-content-wrapper"><img src="${avatarSrc}" alt="${speakerDisplayName} typing" class="avatar" onerror="this.src='https://placehold.co/40x40/CCC/777?text=${speakerDisplayName.charAt(0).toUpperCase()}'"><div class="message-details"><div class="speaker-name">${speakerDisplayName}</div><div class="message-bubble typing-indicator-bubble"><span></span><span></span><span></span></div></div></div></div>`;
+            const indicatorHTML = `<div class="message-row other-speaker typing-indicator-row" id="typingIndicatorActive"><div class="message-content-wrapper"><img src="${avatarSrc}" alt="${speakerDisplayName} typing" class="avatar" loading="lazy" onerror="this.src='https://placehold.co/40x40/CCC/777?text=${speakerDisplayName.charAt(0).toUpperCase()}'"><div class="message-details"><div class="speaker-name">${speakerDisplayName}</div><div class="message-bubble typing-indicator-bubble"><span></span><span></span><span></span></div></div></div></div>`;
             chatMessagesDiv.insertAdjacentHTML('beforeend', indicatorHTML);
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
         }
@@ -660,6 +736,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             if (image) {
                 const imgElement = document.createElement('img'); imgElement.src = image;
                 imgElement.alt = image.split('/').pop().split('.')[0] || 'Chat image';
+                imgElement.loading = "lazy"; // Lazy load images
                 imgElement.onerror = function() { this.src = `https://placehold.co/300x200/EEE/333?text=Error+${encodeURIComponent(imgElement.alt)}`; this.onerror=null; };
                 messageBubble.appendChild(imgElement);
             }
@@ -668,6 +745,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                 videoElement.src = video; 
                 videoElement.controls = true; videoElement.autoplay = true; videoElement.muted = false; 
                 videoElement.playsInline = true; 
+                videoElement.loading = "lazy"; // Lazy load videos
                 messageBubble.appendChild(videoElement);
             }
 
@@ -680,6 +758,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                 const contentWrapper = document.createElement('div'); contentWrapper.classList.add('message-content-wrapper');
                 const avatarImg = document.createElement('img'); avatarImg.classList.add('avatar');
                 avatarImg.src = getAvatar(speaker); avatarImg.alt = getDisplayName(speaker) + ' avatar';
+                avatarImg.loading = "lazy";
                 avatarImg.onerror = function() { this.src = `https://placehold.co/40x40/CCC/777?text=${getDisplayName(speaker).charAt(0).toUpperCase()}`; this.onerror=null;};
                 const messageDetailsDiv = document.createElement('div'); messageDetailsDiv.classList.add('message-details');
                 if (speaker.toLowerCase() !== 'hiếu') {
@@ -755,9 +834,15 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             if (hieuMessageQueue.length > 0) {
                 const hieuMsg = hieuMessageQueue[0];
                 const button = document.createElement('button'); button.classList.add('hieu-button');
+                button.setAttribute('role', 'button');
+                let buttonTextForLabel = hieuMsg.text.replace(/\*.*?\*/g, "").trim(); // Remove actions for label
+                if (hieuMsg.image) buttonTextForLabel += " (có hình ảnh)";
+                if (hieuMsg.video) buttonTextForLabel += " (có video)";
+                button.setAttribute('aria-label', `Lựa chọn của Hiếu: ${buttonTextForLabel || 'Tiếp tục'}`);
+
                 let buttonContent = DOMPurify.sanitize(hieuMsg.text.replace(/\*(.*?)\*/g, '<em>$1</em>'));
-                if (hieuMsg.image) buttonContent += `<br><img src="${hieuMsg.image}" alt="image preview" style="max-height: 50px; border-radius: 4px; margin-top: 4px;" onerror="this.style.display='none'">`;
-                if (hieuMsg.video) buttonContent += `<br><span style="font-size:0.8em; color:#eee;">(Video included)</span>`;
+                if (hieuMsg.image) buttonContent += `<br><img src="${hieuMsg.image}" alt="xem trước hình ảnh" style="max-height: 50px; border-radius: 4px; margin-top: 4px;" loading="lazy" onerror="this.style.display='none'">`;
+                if (hieuMsg.video) buttonContent += `<br><span style="font-size:0.8em; color:#eee;">(Video kèm theo)</span>`;
                 button.innerHTML = buttonContent;
                 button.onclick = () => {
                     const allCurrentHieuButtons = hieuActionsDiv.querySelectorAll('.hieu-button');
@@ -778,6 +863,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             hideTypingIndicator(); nextSceneButton.style.display = 'none';
             chatMessagesDiv.innerHTML = ''; hieuActionsDiv.innerHTML = '';
             quizContainer.style.display = 'none'; 
+            quizContainer.setAttribute('aria-hidden', 'true');
             chatMessagesDiv.style.display = 'flex'; 
             hieuActionsDiv.style.display = 'flex';
             navigationArea.style.display = 'flex';
@@ -818,12 +904,14 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             quizActive = true;
             currentQuizSet = quizDataset;
             currentQuizQuestionIndex = 0;
-            currentTeleportedButtons = []; // Reset for the new quiz set
+            currentTeleportedButtons = []; 
 
             chatMessagesDiv.style.display = 'none';
             hieuActionsDiv.style.display = 'none';
             navigationArea.style.display = 'none';
             quizContainer.style.display = 'flex';
+            quizContainer.setAttribute('aria-hidden', 'false');
+
 
             headerNameSpan.textContent = quizTitle;
             headerAvatarImg.src = getAvatar(quizSubjectName, true);
@@ -835,6 +923,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             } else {
                 chatContainer.classList.remove('theme-rose'); 
             }
+            quizQuestionEl.focus(); // Focus on the question for screen readers
             displayQuizQuestion();
         }
 
@@ -843,7 +932,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             quizCompletionMessageEl.style.display = 'none';
             quizQuestionEl.style.display = 'block'; 
             quizChoicesEl.style.display = 'grid';  
-            currentTeleportedButtons = []; // Reset teleported buttons for new question
+            currentTeleportedButtons = []; 
 
 
             if (currentQuizQuestionIndex < currentQuizSet.length) {
@@ -856,6 +945,8 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                 shuffledChoices.forEach(choiceText => {
                     const button = document.createElement('button');
                     button.classList.add('quiz-choice-button');
+                    button.setAttribute('role', 'button');
+                    button.setAttribute('aria-label', `Lựa chọn: ${choiceText}`);
                     button.textContent = choiceText;
                     button.onclick = (event) => handleQuizAnswer(choiceText, event.target, q.correctAnswerText, q.feedback);
                     quizChoicesEl.appendChild(button);
@@ -886,25 +977,28 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             } else {
                 quizFeedbackEl.textContent = ''; // No wrong answer feedback text
                 
-                // Only disable the clicked wrong button
                 clickedButton.disabled = true; 
-                clickedButton.classList.add('teleported'); // Mark as teleported for styling (e.g., red color)
+                clickedButton.classList.add('teleported'); 
 
-                // Teleport logic
                 const choicesRect = quizChoicesEl.getBoundingClientRect();
                 const buttonStyle = getComputedStyle(clickedButton);
                 const buttonWidth = parseFloat(buttonStyle.width);
                 const buttonHeight = parseFloat(buttonStyle.height);
                 
                 let randomTop, randomLeft, attempts = 0;
-                const maxAttempts = 50; // Increased attempts for better placement
+                const maxAttempts = 50; 
 
-                // Get rects of all OTHER buttons (correct and other wrong ones, including already teleported ones)
-                const otherButtonElements = allChoiceButtons.filter(btn => btn !== clickedButton);
-                const occupiedRects = otherButtonElements.map(btn => btn.getBoundingClientRect());
+                const otherVisibleButtons = allChoiceButtons.filter(btn => btn !== clickedButton && !btn.classList.contains('teleported') && btn !== correctButtonElement);
+                const staticOccupiedRects = otherVisibleButtons.map(btn => btn.getBoundingClientRect());
                 if (correctButtonElement && correctButtonElement !== clickedButton) {
-                     // Ensure correctButtonElement's rect is considered if it's not the clicked one
+                    staticOccupiedRects.push(correctButtonElement.getBoundingClientRect());
                 }
+                // Add already teleported buttons to occupiedRects, using their current absolute positions
+                currentTeleportedButtons.forEach(teleportedBtn => {
+                    if (teleportedBtn !== clickedButton) { // Don't check against itself before it's moved
+                        staticOccupiedRects.push(teleportedBtn.getBoundingClientRect());
+                    }
+                });
 
 
                 do {
@@ -912,7 +1006,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                     randomLeft = Math.random() * (choicesRect.width - buttonWidth);
                     
                     const newRect = {
-                        top: choicesRect.top + randomTop, // Position relative to viewport for checking
+                        top: choicesRect.top + randomTop, 
                         left: choicesRect.left + randomLeft,
                         right: choicesRect.left + randomLeft + buttonWidth,
                         bottom: choicesRect.top + randomTop + buttonHeight,
@@ -921,25 +1015,16 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                     };
                     
                     let isOverlappingOther = false;
-                    for (const rect of occupiedRects) {
+                    for (const rect of staticOccupiedRects) {
                         if (isOverlapping(newRect, rect)) {
                             isOverlappingOther = true;
                             break;
                         }
                     }
-                     // Also check against the correct button if it's not the one being moved
-                    if (correctButtonElement && correctButtonElement !== clickedButton && isOverlapping(newRect, correctButtonElement.getBoundingClientRect())) {
-                        isOverlappingOther = true;
-                    }
-
-
-                    if (!isOverlappingOther) {
-                        break; 
-                    }
+                    if (!isOverlappingOther) break; 
                     attempts++;
                 } while (attempts < maxAttempts);
 
-                // Apply new position relative to the #quizChoices container
                 clickedButton.style.position = 'absolute';
                 clickedButton.style.top = `${randomTop}px`;
                 clickedButton.style.left = `${randomLeft}px`;
@@ -950,7 +1035,6 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             }
         }
         
-        // Helper function to check for overlap between two rectangles
         function isOverlapping(rect1, rect2) {
             if (!rect1 || !rect2) return false;
             return !(rect1.right < rect2.left || 
@@ -959,7 +1043,6 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                      rect1.top > rect2.bottom);
         }
 
-
         function endAllQuizzes() {
             quizQuestionEl.style.display = 'none';
             quizChoicesEl.style.display = 'none';
@@ -967,6 +1050,8 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             quizCompletionMessageEl.textContent = `Chúc mừng đã hoàn thành tất cả Quiz! Bạn thật là hiểu Mẫn và Tiệm Cuộn Len đó!`;
             quizCompletionMessageEl.style.display = 'block';
             quizCompletionMessageEl.style.color = '#007bff'; 
+            quizCompletionMessageEl.focus();
+
 
             headerNameSpan.textContent = "Hoàn Thành!"; 
             headerAvatarImg.src = getAvatar("Mẫn", true); 
