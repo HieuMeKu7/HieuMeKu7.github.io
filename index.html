@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Script App - Messenger Style</title>
+    <title>Ứng dụng Kịch bản Chat - Kiểu Messenger</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -34,14 +34,29 @@
         .chat-header {
             background-color: #0084ff;
             color: white;
-            padding: 12px 18px;
-            text-align: center;
+            padding: 10px 15px; /* Adjusted padding for avatar */
+            display: flex; /* Use flexbox for avatar and text alignment */
+            align-items: center; /* Vertically center items */
+            /* justify-content: center; /* Center content if no avatar, or adjust as needed */
             font-size: 1.1em;
             font-weight: 600;
             border-bottom: 1px solid #ddd;
             flex-shrink: 0;
             transition: background-color 0.3s;
         }
+        .header-avatar {
+            width: 36px; /* Slightly larger avatar for header */
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 10px; /* Space between avatar and name */
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.5); /* Optional: slight border for header avatar */
+        }
+        .header-name {
+            flex-grow: 1; /* Allow name to take available space */
+            text-align: left; /* Align name to the left of avatar, or center if preferred */
+        }
+
         .message-bubble.hieu {
             background-color: #0084ff;
             color: white;
@@ -104,7 +119,7 @@
         .message-row.hieu-speaker .message-content-wrapper {
             flex-direction: row-reverse;
         }
-        .avatar {
+        .avatar { /* Avatar trong tin nhắn */
             width: 32px;
             height: 32px;
             border-radius: 50%;
@@ -159,38 +174,12 @@
         .message-text {
             margin: 0;
         }
-        .message-bubble img { /* For regular images */
+        .message-bubble img, .message-bubble video {
             max-width: 100%;
             border-radius: 10px;
             margin-top: 5px;
             display: block;
         }
-        /* Video container for responsive iframe */
-        .video-container {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            margin-top: 8px;
-            border-radius: 10px; /* Match image radius */
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            border: none; 
-        }
-        .video-note {
-            font-size: 0.75em;
-            opacity: 0.7;
-            margin-top: 4px;
-            text-align: left; /* Align note with bubble content */
-        }
-
         .message-bubble a {
             color: inherit;
             text-decoration: underline;
@@ -225,7 +214,6 @@
             border-radius: 5px;
         }
 
-        /* Typing Indicator Styles */
         .typing-indicator-bubble {
             display: flex;
             align-items: center;
@@ -253,7 +241,6 @@
             40% { opacity: 1; transform: scale(1); }
         }
 
-        /* Navigation Area for Next Scene Button */
         .navigation-area {
             padding: 10px 15px;
             display: flex;
@@ -284,11 +271,14 @@
 </head>
 <body>
     <div class="chat-container" id="chatContainer">
-        <div class="chat-header" id="chatHeader">Loading Chat...</div>
+        <div class="chat-header" id="chatHeader">
+            <img src="" alt="Avatar Tiêu đề" class="header-avatar" id="headerAvatar" style="display: none;">
+            <span id="headerName">Đang tải...</span>
+        </div>
         <div class="chat-messages" id="chatMessages"></div>
         <div class="hieu-actions" id="hieuActions"></div>
         <div class="navigation-area" id="navigationArea">
-            <button class="nav-button" id="nextSceneButton" style="display: none;">Next Scene</button>
+            <button class="nav-button" id="nextSceneButton" style="display: none;">Cảnh Tiếp</button>
         </div>
     </div>
 
@@ -315,37 +305,37 @@ Mẫn: Ok, z mai 12h30 Thám tử Kiên nha
 Hiếu: Dạ.
 5. 
 Hiếu: Sốp ơi còn mẫu này không ạ?
-Tiệm cuộn len: *Tin nhắn tự động* Xin chào, cảm ơn bạn đã liên hệ với Tiệm Cuộn Len. Tiệm sẽ cố gắng trả lời tin nhắn của bạn trong thời gian sớm nhất có thể <3.
+Tiệm Cuộn Len: *Tin nhắn tự động* Xin chào, cảm ơn bạn đã liên hệ với Tiệm Cuộn Len. Tiệm sẽ cố gắng trả lời tin nhắn của bạn trong thời gian sớm nhất có thể <3.
 Hiếu: *gửi link mẫu*
-Tiệm cuộn len: *5 tiếng sau* Tiệm đang trong thời gian bảo trì, khi nào tiệm nhận đơn tiệm sẽ liên hệ báo giá và chốt đơn cho bạn nha. Cảm ơn bạn
+Tiệm Cuộn Len: *5 tiếng sau* Tiệm đang trong thời gian bảo trì, khi nào tiệm nhận đơn tiệm sẽ liên hệ báo giá và chốt đơn cho bạn nha. Cảm ơn bạn
 6. 2 tháng sau
-Tiệm cuộn len: Hi bạn
-Tiệm cuộn len: Tiệm bắt đầu nhận đơn nha
-Tiệm cuộn len: Bạn muốn size như nào
-Tiệm cuộn len: Bạn còn nhu cần hong
+Tiệm Cuộn Len: Hi bạn
+Tiệm Cuộn Len: Tiệm bắt đầu nhận đơn nha
+Tiệm Cuộn Len: Bạn muốn size như nào
+Tiệm Cuộn Len: Bạn còn nhu cần hong
 Hiếu: Đổi con đc k sốp
-Tiệm cuộn len: Đc nha
-Tiệm cuộn len: Lựa lẹ cho sốp
+Tiệm Cuộn Len: Đc nha
+Tiệm Cuộn Len: Lựa lẹ cho sốp
 Hiếu: Cho e 15p
 *6 tiếng sau*
-Tiệm cuộn len: Có chốt ch
-Tiệm cuộn len: Shop đang ế nè
+Tiệm Cuộn Len: Có chốt ch
+Tiệm Cuộn Len: Shop đang ế nè
 Hiếu: Ủa tưởng đang đông đơn
-Tiệm cuộn len: Thì nhận trước tính sau
-Tiệm cuộn len: không thì khỏi xếp lịch
-Tiệm cuộn len: Chờ mùa mưa năm sau:
+Tiệm Cuộn Len: Thì nhận trước tính sau
+Tiệm Cuộn Len: không thì khỏi xếp lịch
+Tiệm Cuộn Len: Chờ mùa mưa năm sau:
 Hiếu: *gửi link youtube con ma bằng len*(add image conmadom)
 Hiếu: Dạ đây ạ
-Tiệm cuộn len: Gửi hình
-Tiệm cuộn len: Mắc công sóp phải coi vi đê ô
+Tiệm Cuộn Len: Gửi hình
+Tiệm Cuộn Len: Mắc công sóp phải coi vi đê ô
 Hiếu: Cái này cũng đc sốp ạ
 Hiếu: *gửi hình con ma 1*(add image conma1)
 Hiếu: *gửi hình con ma 2*(add image conma2)
-Tiệm cuộn len: Nào xong thì mặc sốp coi
-Tiệm cuộn len: Con ma thì đc, quả bí hơi nhỏ
+Tiệm Cuộn Len: Nào xong thì mặc sốp coi
+Tiệm Cuộn Len: Con ma thì đc, quả bí hơi nhỏ
 Hiếu: Dạ sao cũng được, hoi lỡ r có bí có mũ luôn nha, móc k đc thì bỏ qua
-Tiệm cuộn len: Ý là thách thức shop hả
-Hiếu: Dạ k ạ…*(Tiệm cuộn len react ok trên tin nhắn)*
+Tiệm Cuộn Len: Ý là thách thức shop hả
+Hiếu: Dạ k ạ…*(Tiệm Cuộn Len react ok trên tin nhắn)*
 1 năm sau, chị ấy vẫn không giao con ma cho tôi, có một tin đồn là chị ấy quỵt đơn luôn, mãn kiếp trả
 7.
 Mẫn: Dô like share cho sốp chưa?
@@ -411,8 +401,8 @@ Hiếu: Bộ giống lắm hả
 Mẫn: Ờ, cho đến khi thấy cái tướng chạy của mày
 20.
 Hiếu: 20 à, phải rồi, năm nay Mẫn 20 tuổi nhỉ, cảm ơn mày vì đã đồng hành cũng tao 1/10 cuộc đời của mày, mong mày giàu
-Hiếu: Chúc mày luôn được như này: (stream video: https://www.youtube.com/watch?v=WFwna8ZH2DI)
-Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.com/watch?v=np0hCOhh8WU)
+Hiếu: Chúc mày luôn được như này: (stream video: images/1.mp4)
+Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         `;
 
         const TYPING_DURATION = 1200; 
@@ -422,7 +412,10 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
 
         function slugify(text) {
             if (typeof text !== 'string') return '';
-            return text.toString().toLowerCase().normalize('NFKD').replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
+            let slug = text.toString().toLowerCase();
+            slug = slug.normalize('NFKD').replace(/[\u0300-\u036f]/g, ""); 
+            slug = slug.replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
+            return slug;
         }
 
         function parseScript(rawText) {
@@ -446,11 +439,11 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
                     if (!line) return;
                     let speaker = "System", text = line, image = null, video = null;
                     let isAvatarChangeMessage = false, isNicknameChangeMessage = false, newNickname = null;
-                    const speakerMatch = line.match(/^(Hiếu|Mẫn|Tiệm cuộn len):\s*(.*)/i);
+                    const speakerMatch = line.match(/^(Hiếu|Mẫn|Tiệm Cuộn Len):\s*(.*)/i); 
                     if (speakerMatch) {
-                        speaker = speakerMatch[1].trim();
+                        speaker = speakerMatch[1].trim(); 
                         text = speakerMatch[2].trim();
-                        if (speaker.toLowerCase() === 'tiệm cuộn len') sceneHasTiemCuonLen = true;
+                        if (speaker === 'Tiệm Cuộn Len') sceneHasTiemCuonLen = true; 
                         if (speaker.toLowerCase() === 'mẫn' && text.startsWith("8 tiếng sau")) {
                             messages.push({ speaker: "System", text: "*8 tiếng sau*", image: null, video: null, isAvatarChangeMessage: false, isNicknameChangeMessage: false, newNickname: null });
                             text = text.substring("8 tiếng sau".length).replace(/^,?\s*/, "").trim();
@@ -472,11 +465,11 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
                         image = `images/${imageMatchCurrentText[1].trim().replace(/\s+/g, '_')}.jpg`;
                         text = text.replace(imageRegex, "").trim();
                     }
-                    const videoRegex = /\((?:stream video|stream VIDEO):\s*(.*?)\)/i; // This will capture the URL for video
+                    const videoRegex = /\((?:stream video|stream VIDEO):\s*(.*?)\)/i;
                     const videoMatchCurrentText = text.match(videoRegex);
                     if (videoMatchCurrentText) {
-                        video = videoMatchCurrentText[1].trim(); // Store the URL in the 'video' property
-                        text = text.replace(videoRegex, "").trim(); // Remove the tag from text
+                        video = videoMatchCurrentText[1].trim(); 
+                        text = text.replace(videoRegex, "").trim(); 
                     }
                     if (!text && (image || video) && speaker !== "System") text = "";
                     if (text || image || video || isAvatarChangeMessage || isNicknameChangeMessage || (speaker === "System" && line.trim() !== "")) {
@@ -492,18 +485,28 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
         let currentSceneIndex = 0, currentMessageInScene = 0, manAvatarCurrent = "images/HueMan.jpg", manNicknameGlobal = "Mẫn";
         let hieuMessageQueue = [];
         const MAN_AVATAR_DEFAULT = "images/HueMan.jpg", MAN_AVATAR_SCENE15 = "images/30092024.jpg";
-        const chatContainer = document.getElementById('chatContainer'), chatHeaderDiv = document.getElementById('chatHeader');
+        const chatContainer = document.getElementById('chatContainer');
+        const headerAvatarImg = document.getElementById('headerAvatar');
+        const headerNameSpan = document.getElementById('headerName');
         const chatMessagesDiv = document.getElementById('chatMessages'), hieuActionsDiv = document.getElementById('hieuActions');
         const nextSceneButton = document.getElementById('nextSceneButton');
         nextSceneButton.onclick = () => { if (currentSceneIndex < scriptData.length - 1) loadScene(currentSceneIndex + 1); };
 
-        function getAvatar(speaker) {
-            if (speaker.toLowerCase() === 'hiếu') return 'images/Hieu.jpg';
-            if (speaker.toLowerCase() === 'mẫn') return manAvatarCurrent;
-            if (speaker.toLowerCase() === 'tiệm cuộn len') return 'images/shop.jpg';
-            return `https://placehold.co/40x40/CCC/777?text=${speaker.charAt(0).toUpperCase()}`;
+        function getAvatar(speaker, forHeader = false) {
+            const speakerNameForAvatar = speaker; 
+            if (speakerNameForAvatar.toLowerCase() === 'hiếu') return 'images/Hieu.jpg';
+            if (speakerNameForAvatar.toLowerCase() === 'mẫn') {
+                // For header, use current avatar. For Scene 15 message, it might be different.
+                return forHeader ? manAvatarCurrent : (scriptData[currentSceneIndex]?.title.includes("Scene 15") && manAvatarCurrent === MAN_AVATAR_SCENE15 ? MAN_AVATAR_SCENE15 : MAN_AVATAR_DEFAULT);
+            }
+            if (speakerNameForAvatar === 'Tiệm Cuộn Len') return 'images/shop.jpg';
+            return `https://placehold.co/40x40/CCC/777?text=${getDisplayName(speaker).charAt(0).toUpperCase()}`;
         }
-        function getDisplayName(speaker) { return speaker.toLowerCase() === 'mẫn' ? manNicknameGlobal : speaker; }
+        function getDisplayName(speaker) { 
+            if (speaker.toLowerCase() === 'mẫn') return manNicknameGlobal;
+            if (speaker === 'Tiệm Cuộn Len') return 'Tiệm Cuộn Len';
+            return speaker; 
+        }
 
         function showTypingIndicator(speaker) {
             hideTypingIndicator();
@@ -519,7 +522,12 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
             if (isNicknameChangeMessage && newNickname) {
                 manNicknameGlobal = newNickname;
                 const scene = scriptData[currentSceneIndex];
-                if (scene && !scene.sceneHasTiemCuonLen) chatHeaderDiv.textContent = manNicknameGlobal + (scene.sceneSubTitle ? ` ${scene.sceneSubTitle}` : "");
+                if (scene && !scene.sceneHasTiemCuonLen) { // Update header only if Mẫn is the main contact
+                    headerNameSpan.textContent = manNicknameGlobal + (scene.sceneSubTitle ? ` ${scene.sceneSubTitle}` : "");
+                    headerAvatarImg.src = getAvatar("Mẫn", true); // Update header avatar if Mẫn's nickname changes
+                    headerAvatarImg.alt = manNicknameGlobal + " Avatar";
+                    headerAvatarImg.style.display = 'block';
+                }
             }
             const messageRow = document.createElement('div'); messageRow.classList.add('message-row');
             const messageBubble = document.createElement('div'); messageBubble.classList.add('message-bubble');
@@ -533,33 +541,19 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
                 imgElement.onerror = function() { this.src = `https://placehold.co/300x200/EEE/333?text=Error+${encodeURIComponent(imgElement.alt)}`; this.onerror=null; };
                 messageBubble.appendChild(imgElement);
             }
-            if (video) { // 'video' now holds the URL for iframe
-                const videoContainer = document.createElement('div');
-                videoContainer.classList.add('video-container');
-                const iframeElement = document.createElement('iframe');
-                iframeElement.src = video; // Use the URL from script
-                iframeElement.title = "YouTube video player"; // Generic title
-                iframeElement.frameBorder = "0";
-                iframeElement.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-                iframeElement.referrerPolicy = "strict-origin-when-cross-origin";
-                iframeElement.allowFullscreen = true;
-                videoContainer.appendChild(iframeElement);
-                messageBubble.appendChild(videoContainer);
-
-                const videoNote = document.createElement('p');
-                videoNote.classList.add('video-note');
-                videoNote.textContent = "(Video playback depends on browser support for the source URL format.)";
-                if (video.includes("googleusercontent.com/youtube")) {
-                    videoNote.textContent = "(Note: YouTube links in this format may not play directly. Standard YouTube embed URLs are different.)";
-                }
-                messageBubble.appendChild(videoNote);
+            if (video) { 
+                const videoElement = document.createElement('video');
+                videoElement.src = video; 
+                videoElement.controls = true; videoElement.autoplay = true; videoElement.muted = true; 
+                videoElement.playsInline = true; 
+                messageBubble.appendChild(videoElement);
             }
 
             if (speaker.toLowerCase() === 'system') {
                 messageBubble.classList.add('system'); messageRow.style.justifyContent = 'center';
                 messageRow.appendChild(messageBubble);
             } else {
-                messageRow.classList.add(slugify(speaker) + '-speaker');
+                messageRow.classList.add(slugify(speaker) + '-speaker'); 
                 if (slugify(speaker) !== 'hieu') messageRow.classList.add('other-speaker');
                 const contentWrapper = document.createElement('div'); contentWrapper.classList.add('message-content-wrapper');
                 const avatarImg = document.createElement('img'); avatarImg.classList.add('avatar');
@@ -568,15 +562,24 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
                 const messageDetailsDiv = document.createElement('div'); messageDetailsDiv.classList.add('message-details');
                 if (speaker.toLowerCase() !== 'hiếu') {
                     const speakerNameDiv = document.createElement('div'); speakerNameDiv.classList.add('speaker-name');
-                    speakerNameDiv.textContent = getDisplayName(speaker); messageDetailsDiv.appendChild(speakerNameDiv);
+                    speakerNameDiv.textContent = getDisplayName(speaker); 
+                    messageDetailsDiv.appendChild(speakerNameDiv);
                 }
-                messageBubble.classList.add(slugify(speaker)); messageDetailsDiv.appendChild(messageBubble);
+                messageBubble.classList.add(slugify(speaker)); 
+                messageDetailsDiv.appendChild(messageBubble);
                 contentWrapper.appendChild(avatarImg); contentWrapper.appendChild(messageDetailsDiv);
                 messageRow.appendChild(contentWrapper);
             }
             chatMessagesDiv.appendChild(messageRow);
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-            if (isAvatarChangeMessage && scriptData[currentSceneIndex] && scriptData[currentSceneIndex].title.includes("Scene 15")) manAvatarCurrent = MAN_AVATAR_SCENE15;
+            if (isAvatarChangeMessage && scriptData[currentSceneIndex]?.title.includes("Scene 15")) {
+                manAvatarCurrent = MAN_AVATAR_SCENE15;
+                // If Mẫn is the current header contact, update her header avatar too
+                const scene = scriptData[currentSceneIndex];
+                if(scene && !scene.sceneHasTiemCuonLen) {
+                    headerAvatarImg.src = manAvatarCurrent;
+                }
+            }
         }
 
         function updateNextSceneButtonVisibility() {
@@ -586,10 +589,25 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
 
         function processNextMessage() {
             const scene = scriptData[currentSceneIndex];
-            if (!scene) { chatHeaderDiv.textContent = "Error: End of script or scene not found."; nextSceneButton.style.display = 'none'; return; }
+            if (!scene) { 
+                headerNameSpan.textContent = manNicknameGlobal; // Show Mẫn's name at true end
+                headerAvatarImg.src = getAvatar("Mẫn", true);
+                headerAvatarImg.alt = manNicknameGlobal + " Avatar";
+                headerAvatarImg.style.display = 'block';
+                nextSceneButton.style.display = 'none'; 
+                return; 
+            }
             if (currentMessageInScene >= scene.messages.length && hieuMessageQueue.length === 0) {
-                if (currentSceneIndex < scriptData.length - 1) updateNextSceneButtonVisibility();
-                else { chatHeaderDiv.textContent = "End of Script"; hieuActionsDiv.innerHTML = ''; nextSceneButton.style.display = 'none'; }
+                if (currentSceneIndex < scriptData.length - 1) {
+                    updateNextSceneButtonVisibility();
+                } else { // True end of all scenes
+                    headerNameSpan.textContent = manNicknameGlobal; // Show Mẫn's name
+                    headerAvatarImg.src = getAvatar("Mẫn", true); // Show Mẫn's avatar
+                    headerAvatarImg.alt = manNicknameGlobal + " Avatar";
+                    headerAvatarImg.style.display = 'block';
+                    hieuActionsDiv.innerHTML = '';
+                    nextSceneButton.style.display = 'none';
+                }
                 return;
             }
             if (currentMessageInScene < scene.messages.length) {
@@ -640,17 +658,41 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: https://www.youtube.co
 
         function loadScene(sceneIndex) {
             currentSceneIndex = sceneIndex; currentMessageInScene = 0; hieuMessageQueue = [];
-            manAvatarCurrent = MAN_AVATAR_DEFAULT; hideTypingIndicator(); nextSceneButton.style.display = 'none';
+            manAvatarCurrent = MAN_AVATAR_DEFAULT; // Reset Mẫn's message avatar for new scene
+            hideTypingIndicator(); nextSceneButton.style.display = 'none';
             chatMessagesDiv.innerHTML = ''; hieuActionsDiv.innerHTML = '';
+
             if (currentSceneIndex >= scriptData.length) {
-                chatHeaderDiv.textContent = "End of Script"; chatContainer.classList.remove('theme-rose'); return;
+                headerNameSpan.textContent = manNicknameGlobal; // Show Mẫn's name at true end
+                headerAvatarImg.src = getAvatar("Mẫn", true); // Show Mẫn's avatar
+                headerAvatarImg.alt = manNicknameGlobal + " Avatar";
+                headerAvatarImg.style.display = 'block';
+                chatContainer.classList.add('theme-rose'); // Ensure Mẫn's theme at the very end
+                return;
             }
             const scene = scriptData[currentSceneIndex];
             let headerText = "";
-            if (scene.sceneHasTiemCuonLen) { headerText = "Tiệm cuộn len"; chatContainer.classList.remove('theme-rose'); }
-            else { headerText = manNicknameGlobal; chatContainer.classList.add('theme-rose'); }
+            let headerAvatarSrc = "";
+            let headerAvatarAlt = "";
+
+            if (scene.sceneHasTiemCuonLen) { 
+                headerText = "Tiệm Cuộn Len"; 
+                headerAvatarSrc = getAvatar("Tiệm Cuộn Len", true);
+                headerAvatarAlt = "Tiệm Cuộn Len Avatar";
+                chatContainer.classList.remove('theme-rose'); 
+            } else { 
+                headerText = manNicknameGlobal; 
+                headerAvatarSrc = getAvatar("Mẫn", true); // Use Mẫn's current avatar (could be changed one)
+                headerAvatarAlt = manNicknameGlobal + " Avatar";
+                chatContainer.classList.add('theme-rose'); 
+            }
             if (scene.sceneSubTitle) headerText += ` ${scene.sceneSubTitle}`;
-            chatHeaderDiv.textContent = headerText;
+            
+            headerNameSpan.textContent = headerText;
+            headerAvatarImg.src = headerAvatarSrc;
+            headerAvatarImg.alt = headerAvatarAlt;
+            headerAvatarImg.style.display = 'block'; // Show header avatar
+
             processNextMessage();
         }
         
