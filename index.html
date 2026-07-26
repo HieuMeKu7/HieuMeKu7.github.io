@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ứng dụng Kịch bản Chat - Kiểu Messenger</title>
+    <meta name="description" content="Hiếu & Mẫn — một câu chuyện nhỏ kể bằng những đoạn chat, dành tặng sinh nhật 20 tuổi của Mẫn.">
+    <meta name="theme-color" content="#0084ff">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>">
+    <title>Hiếu &amp; Mẫn — Chuyện của tụi mình 💬</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f2f5;
+            background: linear-gradient(160deg, #f0f2f5 0%, #e8ecf3 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             color: #050505;
-            touch-action: manipulation; /* Allow default touch actions like pinch-zoom */
+            touch-action: manipulation;
         }
         .chat-container {
             width: 95%;
@@ -24,20 +27,20 @@
             height: 90vh;
             max-height: 800px;
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.12);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            transition: background-color 0.3s; 
+            transition: background-color 0.3s;
         }
         /* Default Theme (Blue) */
         .chat-header {
             background-color: #0084ff;
             color: white;
-            padding: 10px 15px; 
-            display: flex; 
-            align-items: center; 
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
             font-size: 1.1em;
             font-weight: 600;
             border-bottom: 1px solid #ddd;
@@ -45,16 +48,16 @@
             transition: background-color 0.3s;
         }
         .header-avatar {
-            width: 36px; 
+            width: 36px;
             height: 36px;
             border-radius: 50%;
-            margin-right: 10px; 
+            margin-right: 10px;
             object-fit: cover;
-            border: 1px solid rgba(255, 255, 255, 0.5); 
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
         .header-name {
-            flex-grow: 1; 
-            text-align: left; 
+            flex-grow: 1;
+            text-align: left;
         }
 
         .message-bubble.hieu {
@@ -72,28 +75,27 @@
             cursor: pointer;
             text-align: left;
             font-size: 0.95em;
-            transition: background-color 0.3s, opacity 0.2s, transform 0.1s ease-out; 
+            transition: background-color 0.3s, opacity 0.2s, transform 0.1s ease-out;
             width: 100%;
             box-sizing: border-box;
         }
         .hieu-button:hover:not(:disabled) {
             background-color: #0056b3;
-            transform: translateY(-1px); 
+            transform: translateY(-1px);
         }
-         .hieu-button:active:not(:disabled) {
-            transform: translateY(0px); 
+        .hieu-button:active:not(:disabled) {
+            transform: translateY(0px);
         }
-
 
         /* Pink Rose Theme */
         .chat-container.theme-rose .chat-header {
-            background-color: #E91E63; 
+            background-color: #E91E63;
         }
         .chat-container.theme-rose .message-bubble.hieu {
-            background-color: #D81B60; 
+            background-color: #D81B60;
         }
         .chat-container.theme-rose .hieu-button {
-            background-color: #C2185B; 
+            background-color: #C2185B;
         }
         .chat-container.theme-rose .hieu-button:hover:not(:disabled) {
             background-color: #AD1457;
@@ -105,11 +107,17 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
+            scroll-behavior: smooth;
         }
         .message-row {
             display: flex;
             margin-bottom: 2px;
             max-width: 100%;
+            animation: message-in 0.25s ease-out;
+        }
+        @keyframes message-in {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .message-row.hieu-speaker {
             justify-content: flex-end;
@@ -124,7 +132,7 @@
         .message-row.hieu-speaker .message-content-wrapper {
             flex-direction: row-reverse;
         }
-        .avatar { 
+        .avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
@@ -153,7 +161,7 @@
         .message-row.other-speaker .message-details {
             align-items: flex-start;
         }
-        .message-bubble { 
+        .message-bubble {
             padding: 8px 12px;
             border-radius: 18px;
             word-wrap: break-word;
@@ -161,7 +169,7 @@
             line-height: 1.4;
             position: relative;
         }
-        .message-bubble.man, .message-bubble.tiem-cuon-len { 
+        .message-bubble.man, .message-bubble.tiem-cuon-len {
             background-color: #e4e6eb;
             color: #050505;
             border-top-left-radius: 4px;
@@ -198,6 +206,9 @@
             background-color: #f9f9f9;
             flex-shrink: 0;
         }
+        .hieu-actions:empty {
+            display: none;
+        }
         .hieu-button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
@@ -207,22 +218,11 @@
             border-radius: 5px;
             margin-top: 5px;
         }
-        img[alt]:after {
-            content: attr(alt);
-            display: block;
-            position: absolute;
-            background-color: #eee;
-            color: #777;
-            text-align: center;
-            padding: 10px;
-            border: 1px dashed #ccc;
-            border-radius: 5px;
-        }
 
         .typing-indicator-bubble {
             display: flex;
             align-items: center;
-            background-color: #e4e6eb; 
+            background-color: #e4e6eb;
             color: #050505;
             padding: 10px 14px;
             border-radius: 18px;
@@ -239,7 +239,6 @@
         }
         .typing-indicator-bubble span:nth-child(1) { animation-delay: -0.32s; }
         .typing-indicator-bubble span:nth-child(2) { animation-delay: -0.16s; }
-        .typing-indicator-bubble .message-text { display: none; }
 
         @keyframes typing-dots {
             0%, 80%, 100% { opacity: 0; transform: scale(0.5); }
@@ -249,13 +248,19 @@
         .navigation-area {
             padding: 10px 15px;
             display: flex;
-            justify-content: flex-end;
+            align-items: center;
+            justify-content: space-between;
             background-color: #f0f2f5;
             border-top: 1px solid #ddd;
             flex-shrink: 0;
         }
-        .nav-button { 
-            background-color: #42b72a; 
+        .scene-progress {
+            font-size: 0.85em;
+            color: #65676b;
+            font-weight: 600;
+        }
+        .nav-button {
+            background-color: #42b72a;
             color: white;
             border: none;
             padding: 10px 18px;
@@ -264,6 +269,9 @@
             font-size: 0.9em;
             font-weight: 600;
             transition: background-color 0.3s, transform 0.1s ease-out;
+        }
+        .nav-button.replay {
+            background-color: #E91E63;
         }
         .nav-button:disabled {
             background-color: #ccd0d5;
@@ -277,6 +285,23 @@
             transform: translateY(0px);
         }
 
+        .celebration-emoji {
+            position: fixed;
+            bottom: -50px;
+            font-size: 26px;
+            pointer-events: none;
+            z-index: 999;
+            animation: float-up linear forwards;
+        }
+        @keyframes float-up {
+            to { transform: translateY(-115vh) rotate(340deg); opacity: 0; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .message-row { animation: none; }
+            .chat-messages { scroll-behavior: auto; }
+            .celebration-emoji { display: none; }
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 600px) {
             .chat-header { font-size: 1em; padding: 8px 12px; }
@@ -287,9 +312,9 @@
             .nav-button { font-size: 0.85em; padding: 8px 15px; }
             .message-content-wrapper { max-width: 85%; }
         }
-         @media (max-width: 400px) {
+        @media (max-width: 400px) {
             .chat-header { font-size: 0.9em; }
-             .message-bubble { font-size: 0.85em; }
+            .message-bubble { font-size: 0.85em; }
             .hieu-button, .nav-button { font-size: 0.8em; }
         }
     </style>
@@ -298,14 +323,15 @@
     <div class="chat-container" id="chatContainer">
         <div class="chat-header" id="chatHeader" role="banner">
             <img src="" alt="Avatar Tiêu đề" class="header-avatar" id="headerAvatar" style="display: none;" loading="lazy">
-            <span id="headerName">Đang tải...</span>
+            <span class="header-name" id="headerName">Đang tải...</span>
         </div>
         <div class="chat-messages" id="chatMessages" aria-live="polite" aria-atomic="false"></div>
         <div class="hieu-actions" id="hieuActions" role="group" aria-label="Lựa chọn của Hiếu"></div>
         <div class="navigation-area" id="navigationArea">
-            <button class="nav-button" id="nextSceneButton" style="display: none;" role="button" aria-label="Chuyển đến cảnh tiếp theo">Cảnh Tiếp</button>
+            <span class="scene-progress" id="sceneProgress"></span>
+            <button class="nav-button" id="nextSceneButton" style="display: none;" aria-label="Chuyển đến cảnh tiếp theo">Cảnh Tiếp</button>
+            <button class="nav-button replay" id="replayButton" style="display: none;" aria-label="Xem lại câu chuyện từ đầu">Xem lại từ đầu 🔄</button>
         </div>
-        
     </div>
 
     <script>
@@ -313,10 +339,10 @@
 1.
 Hiếu: Mẫn à có muốn xuống D3 ngồi chơi không?
 Mẫn: Ko
-2. 
+2.
 Hiếu: *đăng note* Tôi muốn chết quá đi mất
 Mẫn: *reply note* *Cãi lộn với Trung Hiếu 2 tiếng đồng hồ và không bao giờ nhắc tới chủ đề này nữa*
-3. 
+3.
 Hiếu: Mẫnnnnnnnn, cho t mượn 100k được không, đói bụng quáaaa
 Mẫn: OK
 Mẫn: *chuyển 99K*
@@ -329,7 +355,7 @@ Mẫn: Mai đi coi phim 0?
 Hiếu: Hết tiền r :(. Cho ghi nợ nha, hihi
 Mẫn: Ok, z mai 12h30 Thám tử Kiên nha
 Hiếu: Dạ.
-5. 
+5.
 Hiếu: Sốp ơi còn mẫu này không ạ?
 Tiệm Cuộn Len: *Tin nhắn tự động* Xin chào, cảm ơn bạn đã liên hệ với Tiệm Cuộn Len. Tiệm sẽ cố gắng trả lời tin nhắn của bạn trong thời gian sớm nhất có thể <3.
 Hiếu: *gửi link mẫu*
@@ -369,7 +395,7 @@ Hiếu: Dạ
 8.
 Mẫn: Xuống D3 chơi không?
 Hiếu: Chiện lạ z, chờ e, ok?
-9. 
+9.
 Mẫn: Mai m đi xe với ai?
 Hiếu: Dạ anh
 Mẫn: 6h20
@@ -396,7 +422,7 @@ Mẫn chỉ seen
 13.
 Hiếu: Chúc mừng sinh nhật nha…”một tràng dài 5 dòng”
 Mẫn: Chồ ôi cảm ơn em yêu nhiều nhaaaaa
-14. 
+14.
 Mẫn:*giựt cơ miệng*, *(tự nhiên thôi)*
 Hiếu: Sao mỏ m giựt quài z, khó chịu hà, đó nó giựt nữa kìa
 Mẫn: *giựt mỏ tiếp* Cơ địa, cơ địa mà, ai mà khó chịu với mày
@@ -412,12 +438,12 @@ Mẫn: hihi
 Hiếu: 1p trứng thịt kho+bò xào cá viên chiên cơm thêm canh thêm 30k
 Mẫn: T quyết định là khỏi 30k, 25k thôi
 Mẫn: Đỡ mệt, lằng nhằng
-17. 
+17.
 *Mẫn đã share một bài viết*(add image: hinh2)
 *Hiếu gửi minh chứng đi 3k bước trong 5 ngày liên tục*(add image: hinh3)
 *Hiếu gửi minh chứng đi 3k bước trong 5 ngày liên tục*(add image: hinh4)
 *Mẫn thả tim*
-18. 
+18.
 Mẫn: Ê
 Hiếu: Ơi
 *Mẫn seen và im lặng không rep*
@@ -431,17 +457,33 @@ Hiếu: Chúc mày luôn được như này: (stream video: images/1.mp4)
 Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
         `;
 
-        const TYPING_DURATION = 1200; 
-        const MESSAGE_CONTINUOUS_DELAY = 700; 
-        const HIEU_POST_MESSAGE_DELAY = 500; 
-        const SYSTEM_MESSAGE_DELAY = 1000; 
-        
+        const TYPING_DURATION = 1200;
+        const MESSAGE_CONTINUOUS_DELAY = 700;
+        const HIEU_POST_MESSAGE_DELAY = 500;
+        const SYSTEM_MESSAGE_DELAY = 1000;
+
         function slugify(text) {
             if (typeof text !== 'string') return '';
             let slug = text.toString().toLowerCase();
-            slug = slug.normalize('NFKD').replace(/[\u0300-\u036f]/g, ""); 
+            slug = slug.normalize('NFKD').replace(/[\u0300-\u036f]/g, "");
             slug = slug.replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
             return slug;
+        }
+
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // Escapes the raw text first, then renders *...* segments as <em> —
+        // no third-party sanitizer needed since only these tags can appear.
+        function formatText(text) {
+            return escapeHtml(text).replace(/\*(.*?)\*/g, '<em>$1</em>');
         }
 
         function parseScript(rawText) {
@@ -457,7 +499,7 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                     sceneDescriptionFromTitle = sceneTitleMatch[2] ? sceneTitleMatch[2].trim() : "";
                 }
                 const sceneDataTitle = `Scene ${actualSceneNumber}`;
-                if (actualSceneNumber === "6" && sceneDescriptionFromTitle.toLowerCase().includes("2 tháng sau")) sceneSubTitle = `(${sceneDescriptionFromTitle})`;
+                if (sceneDescriptionFromTitle) sceneSubTitle = `(${sceneDescriptionFromTitle})`;
                 const messages = [];
                 let sceneHasTiemCuonLen = false;
                 lines.forEach(line => {
@@ -465,25 +507,22 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                     if (!line) return;
                     let speaker = "System", text = line, image = null, video = null;
                     let isAvatarChangeMessage = false, isNicknameChangeMessage = false, newNickname = null;
-                    const speakerMatch = line.match(/^(Hiếu|Mẫn|Tiệm Cuộn Len):\s*(.*)/i); 
+                    const speakerMatch = line.match(/^(Hiếu|Mẫn|Tiệm Cuộn Len):\s*(.*)/i);
                     if (speakerMatch) {
-                        speaker = speakerMatch[1].trim(); 
+                        speaker = speakerMatch[1].trim();
                         text = speakerMatch[2].trim();
-                        if (speaker === 'Tiệm Cuộn Len') sceneHasTiemCuonLen = true; 
+                        if (speaker === 'Tiệm Cuộn Len') sceneHasTiemCuonLen = true;
                         if (speaker.toLowerCase() === 'mẫn' && text.startsWith("8 tiếng sau")) {
                             messages.push({ speaker: "System", text: "*8 tiếng sau*", image: null, video: null, isAvatarChangeMessage: false, isNicknameChangeMessage: false, newNickname: null });
                             text = text.substring("8 tiếng sau".length).replace(/^,?\s*/, "").trim();
                         }
                     }
-                    if (line.includes("*Mẫn đã đổi hình đại diện của cô ấy* (note: image 30092024)") && sceneDataTitle.includes("Scene 15")) {
+                    if (line.includes("*Mẫn đã đổi hình đại diện của cô ấy* (note: image 30092024)") && sceneDataTitle === "Scene 15") {
                         speaker = "System"; text = "*Mẫn đã đổi hình đại diện của cô ấy*"; image = `images/30092024.jpg`; isAvatarChangeMessage = true;
                     } else if (line.includes("Hiếu đã đổi biệt danh của Mẫn thành nữ thần Momo")) {
                         speaker = "System"; text = line; isNicknameChangeMessage = true;
                         const nicknameMatch = text.match(/thành (.*)/);
                         if (nicknameMatch && nicknameMatch[1]) newNickname = nicknameMatch[1].trim();
-                    }
-                    if (speaker === "System" && !speakerMatch) {
-                        if ((line.startsWith("*") && line.endsWith("*")) || line.startsWith("Mẫn chỉ seen") || line.match(/^\d+ năm sau/) || line.match(/^\*\d+ tiếng sau\*/) || line.startsWith("*Trong group") || line.startsWith("*Mẫn thả tim*") || line.startsWith("*Mẫn seen và im lặng không rep*")) text = line;
                     }
                     const imageRegex = /\((?:add image|note: image)\s*:?\s*(.*?)\)/i;
                     const imageMatchCurrentText = text.match(imageRegex);
@@ -494,53 +533,69 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                     const videoRegex = /\((?:stream video|stream VIDEO):\s*(.*?)\)/i;
                     const videoMatchCurrentText = text.match(videoRegex);
                     if (videoMatchCurrentText) {
-                        video = videoMatchCurrentText[1].trim(); 
-                        text = text.replace(videoRegex, "").trim(); 
+                        video = videoMatchCurrentText[1].trim();
+                        text = text.replace(videoRegex, "").trim();
                     }
-                    if (!text && (image || video) && speaker !== "System") text = "";
-                    if (text || image || video || isAvatarChangeMessage || isNicknameChangeMessage || (speaker === "System" && line.trim() !== "")) {
-                         messages.push({ speaker, text, image, video, isAvatarChangeMessage, isNicknameChangeMessage, newNickname });
+                    if (text || image || video || isAvatarChangeMessage || isNicknameChangeMessage) {
+                        messages.push({ speaker, text, image, video, isAvatarChangeMessage, isNicknameChangeMessage, newNickname });
                     }
                 });
                 scenes.push({ title: sceneDataTitle, messages, sceneHasTiemCuonLen, sceneSubTitle });
             });
             return scenes;
         }
-        
+
         const scriptData = parseScript(rawScriptText);
-        
-        let currentSceneIndex = 0, currentMessageInScene = 0, manAvatarCurrent = "images/HueMan.jpg", manNicknameGlobal = "Mẫn";
-        let hieuMessageQueue = [];
+
         const MAN_AVATAR_DEFAULT = "images/HueMan.jpg", MAN_AVATAR_SCENE15 = "images/30092024.jpg";
+        const MAN_NICKNAME_DEFAULT = "Mẫn";
+        let currentSceneIndex = 0, currentMessageInScene = 0, manAvatarCurrent = MAN_AVATAR_DEFAULT, manNicknameGlobal = MAN_NICKNAME_DEFAULT;
+        let hieuMessageQueue = [];
+        let storyEnded = false;
         const chatContainer = document.getElementById('chatContainer');
         const headerAvatarImg = document.getElementById('headerAvatar');
         const headerNameSpan = document.getElementById('headerName');
         const chatMessagesDiv = document.getElementById('chatMessages'), hieuActionsDiv = document.getElementById('hieuActions');
         const nextSceneButton = document.getElementById('nextSceneButton');
-        
+        const replayButton = document.getElementById('replayButton');
+        const sceneProgressSpan = document.getElementById('sceneProgress');
+
         nextSceneButton.onclick = () => { if (currentSceneIndex < scriptData.length - 1) loadScene(currentSceneIndex + 1); };
+        replayButton.onclick = () => {
+            manNicknameGlobal = MAN_NICKNAME_DEFAULT;
+            storyEnded = false;
+            replayButton.style.display = 'none';
+            loadScene(0);
+        };
 
         function getAvatar(speaker, forHeader = false) {
-            const speakerNameForAvatar = speaker; 
-            if (speakerNameForAvatar.toLowerCase() === 'hiếu') return 'images/Hieu.jpg';
-            if (speakerNameForAvatar.toLowerCase() === 'mẫn') {
-                return forHeader ? manAvatarCurrent : (scriptData[currentSceneIndex]?.title.includes("Scene 15") && manAvatarCurrent === MAN_AVATAR_SCENE15 ? MAN_AVATAR_SCENE15 : MAN_AVATAR_DEFAULT);
+            const name = speaker.toLowerCase();
+            if (name === 'hiếu') return 'images/Hieu.jpg';
+            if (name === 'mẫn') {
+                return forHeader ? manAvatarCurrent : (scriptData[currentSceneIndex]?.title === "Scene 15" && manAvatarCurrent === MAN_AVATAR_SCENE15 ? MAN_AVATAR_SCENE15 : MAN_AVATAR_DEFAULT);
             }
-            if (speakerNameForAvatar === 'Tiệm Cuộn Len') return 'images/shop.jpg';
+            if (speaker === 'Tiệm Cuộn Len') return 'images/shop.jpg';
             return `https://placehold.co/40x40/CCC/777?text=${getDisplayName(speaker).charAt(0).toUpperCase()}`;
         }
-        function getDisplayName(speaker) { 
+        function getDisplayName(speaker) {
             if (speaker.toLowerCase() === 'mẫn') return manNicknameGlobal;
-            if (speaker === 'Tiệm Cuộn Len') return 'Tiệm Cuộn Len';
-            return speaker; 
+            return speaker;
+        }
+
+        function updateSceneProgress() {
+            sceneProgressSpan.textContent = `Cảnh ${Math.min(currentSceneIndex + 1, scriptData.length)}/${scriptData.length}`;
+        }
+
+        function scrollChatToBottom() {
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
         }
 
         function showTypingIndicator(speaker) {
             hideTypingIndicator();
             const speakerDisplayName = getDisplayName(speaker), avatarSrc = getAvatar(speaker);
-            const indicatorHTML = `<div class="message-row other-speaker typing-indicator-row" id="typingIndicatorActive"><div class="message-content-wrapper"><img src="${avatarSrc}" alt="${speakerDisplayName} typing" class="avatar" loading="lazy" onerror="this.src='https://placehold.co/40x40/CCC/777?text=${speakerDisplayName.charAt(0).toUpperCase()}'"><div class="message-details"><div class="speaker-name">${speakerDisplayName}</div><div class="message-bubble typing-indicator-bubble"><span></span><span></span><span></span></div></div></div></div>`;
+            const indicatorHTML = `<div class="message-row other-speaker typing-indicator-row" id="typingIndicatorActive"><div class="message-content-wrapper"><img src="${avatarSrc}" alt="${escapeHtml(speakerDisplayName)} đang nhắn" class="avatar" loading="lazy" onerror="this.src='https://placehold.co/40x40/CCC/777?text=${speakerDisplayName.charAt(0).toUpperCase()}'"><div class="message-details"><div class="speaker-name">${escapeHtml(speakerDisplayName)}</div><div class="message-bubble typing-indicator-bubble"><span></span><span></span><span></span></div></div></div></div>`;
             chatMessagesDiv.insertAdjacentHTML('beforeend', indicatorHTML);
-            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+            scrollChatToBottom();
         }
         function hideTypingIndicator() { const indicator = document.getElementById('typingIndicatorActive'); if (indicator) indicator.remove(); }
 
@@ -549,32 +604,39 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             if (isNicknameChangeMessage && newNickname) {
                 manNicknameGlobal = newNickname;
                 const scene = scriptData[currentSceneIndex];
-                if (scene && !scene.sceneHasTiemCuonLen) { 
+                if (scene && !scene.sceneHasTiemCuonLen) {
                     headerNameSpan.textContent = manNicknameGlobal + (scene.sceneSubTitle ? ` ${scene.sceneSubTitle}` : "");
-                    headerAvatarImg.src = getAvatar("Mẫn", true); 
+                    headerAvatarImg.src = getAvatar("Mẫn", true);
                     headerAvatarImg.alt = manNicknameGlobal + " Avatar";
                     headerAvatarImg.style.display = 'block';
                 }
             }
             const messageRow = document.createElement('div'); messageRow.classList.add('message-row');
             const messageBubble = document.createElement('div'); messageBubble.classList.add('message-bubble');
-            const messageTextDiv = document.createElement('p'); messageTextDiv.classList.add('message-text');
-            messageTextDiv.innerHTML = DOMPurify.sanitize(text.replace(/\*(.*?)\*/g, '<em>$1</em>'));
-            messageBubble.appendChild(messageTextDiv);
+            if (text) {
+                const messageTextDiv = document.createElement('p'); messageTextDiv.classList.add('message-text');
+                messageTextDiv.innerHTML = formatText(text);
+                messageBubble.appendChild(messageTextDiv);
+            }
 
             if (image) {
                 const imgElement = document.createElement('img'); imgElement.src = image;
-                imgElement.alt = image.split('/').pop().split('.')[0] || 'Chat image';
-                imgElement.loading = "lazy"; 
-                imgElement.onerror = function() { this.src = `https://placehold.co/300x200/EEE/333?text=Error+${encodeURIComponent(imgElement.alt)}`; this.onerror=null; };
+                imgElement.alt = image.split('/').pop().split('.')[0] || 'Hình trong đoạn chat';
+                imgElement.loading = "lazy";
+                imgElement.onerror = function() { this.src = `https://placehold.co/300x200/EEE/333?text=Error+${encodeURIComponent(this.alt)}`; this.onerror = null; };
+                imgElement.onload = scrollChatToBottom;
                 messageBubble.appendChild(imgElement);
             }
-            if (video) { 
+            if (video) {
                 const videoElement = document.createElement('video');
-                videoElement.src = video; 
-                videoElement.controls = true; videoElement.autoplay = true; videoElement.muted = false; 
-                videoElement.playsInline = true; 
-                videoElement.loading = "lazy"; 
+                videoElement.src = video;
+                videoElement.controls = true;
+                videoElement.playsInline = true;
+                videoElement.preload = "metadata";
+                videoElement.onloadedmetadata = scrollChatToBottom;
+                // Browsers block unmuted autoplay without a gesture; the Hiếu
+                // button click usually counts as one, but fall back to controls.
+                videoElement.play().catch(() => {});
                 messageBubble.appendChild(videoElement);
             }
 
@@ -582,32 +644,65 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
                 messageBubble.classList.add('system'); messageRow.style.justifyContent = 'center';
                 messageRow.appendChild(messageBubble);
             } else {
-                messageRow.classList.add(slugify(speaker) + '-speaker'); 
+                messageRow.classList.add(slugify(speaker) + '-speaker');
                 if (slugify(speaker) !== 'hieu') messageRow.classList.add('other-speaker');
                 const contentWrapper = document.createElement('div'); contentWrapper.classList.add('message-content-wrapper');
                 const avatarImg = document.createElement('img'); avatarImg.classList.add('avatar');
                 avatarImg.src = getAvatar(speaker); avatarImg.alt = getDisplayName(speaker) + ' avatar';
                 avatarImg.loading = "lazy";
-                avatarImg.onerror = function() { this.src = `https://placehold.co/40x40/CCC/777?text=${getDisplayName(speaker).charAt(0).toUpperCase()}`; this.onerror=null;};
+                avatarImg.onerror = function() { this.src = `https://placehold.co/40x40/CCC/777?text=${getDisplayName(speaker).charAt(0).toUpperCase()}`; this.onerror = null; };
                 const messageDetailsDiv = document.createElement('div'); messageDetailsDiv.classList.add('message-details');
                 if (speaker.toLowerCase() !== 'hiếu') {
                     const speakerNameDiv = document.createElement('div'); speakerNameDiv.classList.add('speaker-name');
-                    speakerNameDiv.textContent = getDisplayName(speaker); 
+                    speakerNameDiv.textContent = getDisplayName(speaker);
                     messageDetailsDiv.appendChild(speakerNameDiv);
                 }
-                messageBubble.classList.add(slugify(speaker)); 
+                messageBubble.classList.add(slugify(speaker));
                 messageDetailsDiv.appendChild(messageBubble);
                 contentWrapper.appendChild(avatarImg); contentWrapper.appendChild(messageDetailsDiv);
                 messageRow.appendChild(contentWrapper);
             }
             chatMessagesDiv.appendChild(messageRow);
-            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-            if (isAvatarChangeMessage && scriptData[currentSceneIndex]?.title.includes("Scene 15")) {
+            scrollChatToBottom();
+            if (isAvatarChangeMessage && scriptData[currentSceneIndex]?.title === "Scene 15") {
                 manAvatarCurrent = MAN_AVATAR_SCENE15;
                 const scene = scriptData[currentSceneIndex];
-                if(scene && !scene.sceneHasTiemCuonLen) {
+                if (scene && !scene.sceneHasTiemCuonLen) {
                     headerAvatarImg.src = manAvatarCurrent;
                 }
+            }
+        }
+
+        function launchCelebration() {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const emojis = ['💖', '🎂', '🎉', '💗', '🎈', '✨', '🥳'];
+            for (let i = 0; i < 45; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('span');
+                    el.classList.add('celebration-emoji');
+                    el.setAttribute('aria-hidden', 'true');
+                    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    el.style.left = `${Math.random() * 100}vw`;
+                    el.style.animationDuration = `${4 + Math.random() * 4}s`;
+                    el.style.fontSize = `${18 + Math.random() * 18}px`;
+                    document.body.appendChild(el);
+                    el.addEventListener('animationend', () => el.remove());
+                }, i * 180);
+            }
+        }
+
+        function showEnding() {
+            headerNameSpan.textContent = manNicknameGlobal;
+            headerAvatarImg.src = getAvatar("Mẫn", true);
+            headerAvatarImg.alt = manNicknameGlobal + " Avatar";
+            headerAvatarImg.style.display = 'block';
+            chatContainer.classList.add('theme-rose');
+            hieuActionsDiv.innerHTML = '';
+            nextSceneButton.style.display = 'none';
+            replayButton.style.display = 'block';
+            if (!storyEnded) {
+                storyEnded = true;
+                launchCelebration();
             }
         }
 
@@ -618,28 +713,10 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
 
         function processNextMessage() {
             const scene = scriptData[currentSceneIndex];
-            if (!scene) { 
-                headerNameSpan.textContent = manNicknameGlobal; 
-                headerAvatarImg.src = getAvatar("Mẫn", true);
-                headerAvatarImg.alt = manNicknameGlobal + " Avatar";
-                headerAvatarImg.style.display = 'block';
-                chatContainer.classList.add('theme-rose'); 
-                nextSceneButton.style.display = 'none'; 
-                hieuActionsDiv.innerHTML = ''; 
-                return; 
-            }
+            if (!scene) { showEnding(); return; }
             if (currentMessageInScene >= scene.messages.length && hieuMessageQueue.length === 0) {
-                if (currentSceneIndex < scriptData.length - 1) {
-                    updateNextSceneButtonVisibility();
-                } else { 
-                    headerNameSpan.textContent = manNicknameGlobal; 
-                    headerAvatarImg.src = getAvatar("Mẫn", true); 
-                    headerAvatarImg.alt = manNicknameGlobal + " Avatar";
-                    headerAvatarImg.style.display = 'block';
-                    chatContainer.classList.add('theme-rose'); 
-                    hieuActionsDiv.innerHTML = '';
-                    nextSceneButton.style.display = 'none';
-                }
+                if (currentSceneIndex < scriptData.length - 1) updateNextSceneButtonVisibility();
+                else showEnding();
                 return;
             }
             if (currentMessageInScene < scene.messages.length) {
@@ -665,25 +742,23 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
             if (currentMessageInScene >= scene.messages.length && hieuMessageQueue.length === 0) updateNextSceneButtonVisibility();
             else nextSceneButton.style.display = 'none';
         }
-        
+
         function renderHieuButtons() {
             hieuActionsDiv.innerHTML = ''; nextSceneButton.style.display = 'none';
             if (hieuMessageQueue.length > 0) {
                 const hieuMsg = hieuMessageQueue[0];
                 const button = document.createElement('button'); button.classList.add('hieu-button');
-                button.setAttribute('role', 'button');
-                let buttonTextForLabel = hieuMsg.text.replace(/\*.*?\*/g, "").trim(); 
+                let buttonTextForLabel = hieuMsg.text.replace(/\*.*?\*/g, "").trim();
                 if (hieuMsg.image) buttonTextForLabel += " (có hình ảnh)";
                 if (hieuMsg.video) buttonTextForLabel += " (có video)";
                 button.setAttribute('aria-label', `Lựa chọn của Hiếu: ${buttonTextForLabel || 'Tiếp tục'}`);
 
-                let buttonContent = DOMPurify.sanitize(hieuMsg.text.replace(/\*(.*?)\*/g, '<em>$1</em>'));
+                let buttonContent = formatText(hieuMsg.text);
                 if (hieuMsg.image) buttonContent += `<br><img src="${hieuMsg.image}" alt="xem trước hình ảnh" style="max-height: 50px; border-radius: 4px; margin-top: 4px;" loading="lazy" onerror="this.style.display='none'">`;
                 if (hieuMsg.video) buttonContent += `<br><span style="font-size:0.8em; color:#eee;">(Video kèm theo)</span>`;
-                button.innerHTML = buttonContent;
+                button.innerHTML = buttonContent || 'Tiếp tục';
                 button.onclick = () => {
-                    const allCurrentHieuButtons = hieuActionsDiv.querySelectorAll('.hieu-button');
-                    allCurrentHieuButtons.forEach(b => b.disabled = true);
+                    hieuActionsDiv.querySelectorAll('.hieu-button').forEach(b => b.disabled = true);
                     displayMessage(hieuMsg); hieuMessageQueue.shift();
                     setTimeout(() => {
                         if (hieuMessageQueue.length > 0) renderHieuButtons();
@@ -696,73 +771,38 @@ Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
 
         function loadScene(sceneIndex) {
             currentSceneIndex = sceneIndex; currentMessageInScene = 0; hieuMessageQueue = [];
-            manAvatarCurrent = MAN_AVATAR_DEFAULT; 
+            manAvatarCurrent = MAN_AVATAR_DEFAULT;
             hideTypingIndicator(); nextSceneButton.style.display = 'none';
+            replayButton.style.display = 'none';
             chatMessagesDiv.innerHTML = ''; hieuActionsDiv.innerHTML = '';
-            
-            // Ensure elements used only for chat are visible, and quiz is hidden
-            const quizContainerEl = document.getElementById('quizContainer');
-            if (quizContainerEl) { // Check if quiz container exists (it doesn't in this version)
-                 quizContainerEl.style.display = 'none'; 
-                 quizContainerEl.setAttribute('aria-hidden', 'true');
-            }
-            chatMessagesDiv.style.display = 'flex'; 
-            hieuActionsDiv.style.display = 'flex';
-            navigationArea.style.display = 'flex';
-            // quizActive = false; // quizActive is no longer used
+            updateSceneProgress();
 
-            if (currentSceneIndex >= scriptData.length) {
-                headerNameSpan.textContent = manNicknameGlobal; 
-                headerAvatarImg.src = getAvatar("Mẫn", true); 
-                headerAvatarImg.alt = manNicknameGlobal + " Avatar";
-                headerAvatarImg.style.display = 'block';
-                chatContainer.classList.add('theme-rose'); 
-                nextSceneButton.style.display = 'none';
-                hieuActionsDiv.innerHTML = ''; 
-                return;
-            }
+            if (currentSceneIndex >= scriptData.length) { showEnding(); return; }
             const scene = scriptData[currentSceneIndex];
-            let headerText = "";
-            let headerAvatarSrc = "";
-            let headerAvatarAlt = "";
+            let headerText, headerAvatarSrc, headerAvatarAlt;
 
-            if (scene.sceneHasTiemCuonLen) { 
-                headerText = "Tiệm Cuộn Len"; 
+            if (scene.sceneHasTiemCuonLen) {
+                headerText = "Tiệm Cuộn Len";
                 headerAvatarSrc = getAvatar("Tiệm Cuộn Len", true);
                 headerAvatarAlt = "Tiệm Cuộn Len Avatar";
-                chatContainer.classList.remove('theme-rose'); 
-            } else { 
-                headerText = manNicknameGlobal; 
-                headerAvatarSrc = getAvatar("Mẫn", true); 
+                chatContainer.classList.remove('theme-rose');
+            } else {
+                headerText = manNicknameGlobal;
+                headerAvatarSrc = getAvatar("Mẫn", true);
                 headerAvatarAlt = manNicknameGlobal + " Avatar";
-                chatContainer.classList.add('theme-rose'); 
+                chatContainer.classList.add('theme-rose');
             }
             if (scene.sceneSubTitle) headerText += ` ${scene.sceneSubTitle}`;
-            
+
             headerNameSpan.textContent = headerText;
             headerAvatarImg.src = headerAvatarSrc;
             headerAvatarImg.alt = headerAvatarAlt;
-            headerAvatarImg.style.display = 'block'; 
+            headerAvatarImg.style.display = 'block';
 
             processNextMessage();
         }
-        
-        const purifyScript = document.createElement('script');
-        purifyScript.src = "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js";
-        purifyScript.onload = () => { 
-            console.log("DOMPurify loaded successfully."); 
-            loadScene(0); 
-        };
-        purifyScript.onerror = () => {
-            console.error("DOMPurify could not be loaded. HTML content might not be sanitized.");
-            if (typeof DOMPurify === 'undefined') {
-                window.DOMPurify = { sanitize: function(html) {
-                    console.warn("Using basic fallback for DOMPurify.sanitize. XSS protection is minimal.");
-                    if (typeof html !== 'string') return ''; return html.replace(/</g, "<").replace(/>/g, ">"); }};
-            }
-            loadScene(0);
-        };
-        document.head.appendChild(purifyScript);
+
+        loadScene(0);
     </script>
 </body>
 </html>
