@@ -1,808 +1,1046 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Hiếu & Mẫn — một câu chuyện nhỏ kể bằng những đoạn chat, dành tặng sinh nhật 20 tuổi của Mẫn.">
-    <meta name="theme-color" content="#0084ff">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>">
-    <title>Hiếu &amp; Mẫn — Chuyện của tụi mình 💬</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(160deg, #f0f2f5 0%, #e8ecf3 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            color: #050505;
-            touch-action: manipulation;
-        }
-        .chat-container {
-            width: 95%;
-            max-width: 700px;
-            height: 90vh;
-            max-height: 800px;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.12);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: background-color 0.3s;
-        }
-        /* Default Theme (Blue) */
-        .chat-header {
-            background-color: #0084ff;
-            color: white;
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            font-size: 1.1em;
-            font-weight: 600;
-            border-bottom: 1px solid #ddd;
-            flex-shrink: 0;
-            transition: background-color 0.3s;
-        }
-        .header-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            margin-right: 10px;
-            object-fit: cover;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-        .header-name {
-            flex-grow: 1;
-            text-align: left;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Gửi Mẫn — một câu chuyện kể bằng 20 cảnh chat, dành tặng sinh nhật 20 tuổi.">
+<meta name="theme-color" content="#e91e63">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💌</text></svg>">
+<title>Gửi Mẫn 💌</title>
+<style>
+:root{
+  --page-bg: linear-gradient(160deg,#fde5ee 0%,#e8e4f8 55%,#dcefff 100%);
+  --phone-bg:#ffffff;
+  --header-bg:rgba(255,255,255,.88);
+  --text:#050505;
+  --text-dim:#65676b;
+  --bubble-in:#eef0f3;
+  --bubble-in-text:#050505;
+  --divider:#e3e5e9;
+  --composer-bg:#f1f3f5;
+  --accent:#e91e63;
+  --accent-soft:#fce4ec;
+  --out-grad:linear-gradient(135deg,#ff4f8b 0%,#e91e63 100%);
+  --shadow:0 24px 60px rgba(60,30,80,.25);
+}
+[data-theme="shop"]{
+  --accent:#0084ff;
+  --accent-soft:#e3f0ff;
+  --out-grad:linear-gradient(135deg,#00a6ff 0%,#0066ff 100%);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --page-bg: linear-gradient(160deg,#241522 0%,#171226 55%,#0e1a2b 100%);
+    --phone-bg:#101418;
+    --header-bg:rgba(16,20,24,.88);
+    --text:#e7e9ec;
+    --text-dim:#9aa0a8;
+    --bubble-in:#262b31;
+    --bubble-in-text:#e7e9ec;
+    --divider:#23282e;
+    --composer-bg:#1c2126;
+    --shadow:0 24px 60px rgba(0,0,0,.55);
+  }
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--page-bg);
+  color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  min-height:100dvh;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
 
-        .message-bubble.hieu {
-            background-color: #0084ff;
-            color: white;
-            border-top-right-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        .hieu-button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            text-align: left;
-            font-size: 0.95em;
-            transition: background-color 0.3s, opacity 0.2s, transform 0.1s ease-out;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .hieu-button:hover:not(:disabled) {
-            background-color: #0056b3;
-            transform: translateY(-1px);
-        }
-        .hieu-button:active:not(:disabled) {
-            transform: translateY(0px);
-        }
+/* ============ Phone frame ============ */
+.phone{
+  position:relative;
+  width:min(430px,100vw);
+  height:min(880px,100dvh);
+  background:var(--phone-bg);
+  border-radius:28px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+@media (max-width:480px),(max-height:700px){
+  .phone{width:100vw;height:100dvh;border-radius:0}
+}
+.screen{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  opacity:1;transition:opacity .45s ease, transform .45s ease;
+}
+.screen.gone{opacity:0;pointer-events:none;transform:scale(.98)}
 
-        /* Pink Rose Theme */
-        .chat-container.theme-rose .chat-header {
-            background-color: #E91E63;
-        }
-        .chat-container.theme-rose .message-bubble.hieu {
-            background-color: #D81B60;
-        }
-        .chat-container.theme-rose .hieu-button {
-            background-color: #C2185B;
-        }
-        .chat-container.theme-rose .hieu-button:hover:not(:disabled) {
-            background-color: #AD1457;
-        }
+/* ============ Intro screen ============ */
+.intro{
+  align-items:center;justify-content:center;text-align:center;
+  background:linear-gradient(165deg,#ff5e9c 0%,#e91e63 45%,#7b2ff7 100%);
+  color:#fff;padding:32px;z-index:5;
+}
+.intro .floaters span{
+  position:absolute;font-size:26px;opacity:.5;animation:floaty 7s ease-in-out infinite;
+}
+@keyframes floaty{
+  0%,100%{transform:translateY(0) rotate(-6deg)}
+  50%{transform:translateY(-26px) rotate(8deg)}
+}
+.intro-card{position:relative;max-width:320px}
+.intro-ava{
+  width:104px;height:104px;border-radius:50%;object-fit:cover;
+  border:4px solid rgba(255,255,255,.85);
+  box-shadow:0 10px 34px rgba(0,0,0,.3);
+  animation:pulse-ring 2.6s ease-in-out infinite;
+}
+@keyframes pulse-ring{
+  0%,100%{box-shadow:0 10px 34px rgba(0,0,0,.3),0 0 0 0 rgba(255,255,255,.45)}
+  50%{box-shadow:0 10px 34px rgba(0,0,0,.3),0 0 0 18px rgba(255,255,255,0)}
+}
+.intro h1{margin:22px 0 8px;font-size:2rem;letter-spacing:.5px}
+.intro p{margin:0 0 26px;font-size:1rem;line-height:1.55;opacity:.92}
+.intro .hint{font-size:.8rem;opacity:.75;margin-top:16px}
+.btn-open{
+  background:#fff;color:#e91e63;border:none;cursor:pointer;
+  font-size:1.05rem;font-weight:700;padding:14px 34px;border-radius:999px;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.btn-open:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.3)}
+.btn-open:active{transform:translateY(0)}
 
-        .chat-messages {
-            flex-grow: 1;
-            padding: 10px 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            scroll-behavior: smooth;
-        }
-        .message-row {
-            display: flex;
-            margin-bottom: 2px;
-            max-width: 100%;
-            animation: message-in 0.25s ease-out;
-        }
-        @keyframes message-in {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .message-row.hieu-speaker {
-            justify-content: flex-end;
-        }
-        .message-row.other-speaker {
-            justify-content: flex-start;
-        }
-        .message-content-wrapper {
-            display: flex;
-            max-width: 75%;
-        }
-        .message-row.hieu-speaker .message-content-wrapper {
-            flex-direction: row-reverse;
-        }
-        .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            margin: 0 8px;
-            align-self: flex-end;
-            flex-shrink: 0;
-            object-fit: cover;
-        }
-        .message-details {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 8px;
-        }
-        .speaker-name {
-            font-size: 0.8em;
-            color: #65676b;
-            margin-bottom: 3px;
-            padding-left: 12px;
-        }
-        .message-row.hieu-speaker .speaker-name {
-            display: none;
-        }
-        .message-row.other-speaker .message-content-wrapper .avatar {
-            align-self: flex-end;
-        }
-        .message-row.other-speaker .message-details {
-            align-items: flex-start;
-        }
-        .message-bubble {
-            padding: 8px 12px;
-            border-radius: 18px;
-            word-wrap: break-word;
-            font-size: 0.95em;
-            line-height: 1.4;
-            position: relative;
-        }
-        .message-bubble.man, .message-bubble.tiem-cuon-len {
-            background-color: #e4e6eb;
-            color: #050505;
-            border-top-left-radius: 4px;
-        }
-        .message-bubble.system {
-            background-color: #f0f2f5;
-            color: #65676b;
-            font-size: 0.85em;
-            text-align: center;
-            padding: 6px 10px;
-            border-radius: 10px;
-            margin: 8px auto;
-            max-width: 90%;
-        }
-        .message-text {
-            margin: 0;
-        }
-        .message-bubble img, .message-bubble video {
-            max-width: 100%;
-            border-radius: 10px;
-            margin-top: 5px;
-            display: block;
-        }
-        .message-bubble a {
-            color: inherit;
-            text-decoration: underline;
-        }
-        .hieu-actions {
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            border-top: 1px solid #ddd;
-            background-color: #f9f9f9;
-            flex-shrink: 0;
-        }
-        .hieu-actions:empty {
-            display: none;
-        }
-        .hieu-button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-        .hieu-button img {
-            max-width: 100px;
-            border-radius: 5px;
-            margin-top: 5px;
-        }
+/* ============ Chat screen ============ */
+.chat{background:var(--phone-bg)}
+.chat-header{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px calc(8px);
+  padding-top:max(10px, env(safe-area-inset-top));
+  background:var(--header-bg);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--divider);
+  flex-shrink:0;z-index:3;
+}
+.ava-wrap{position:relative;flex-shrink:0}
+.header-ava{width:40px;height:40px;border-radius:50%;object-fit:cover;transition:opacity .3s}
+.online-dot{
+  position:absolute;right:0;bottom:0;width:11px;height:11px;border-radius:50%;
+  background:#31cc46;border:2px solid var(--phone-bg);
+}
+.header-meta{flex:1;min-width:0;text-align:left}
+.header-name{
+  font-weight:700;font-size:1rem;line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:color .3s;
+}
+.header-name.flip{animation:name-flip .5s ease}
+@keyframes name-flip{
+  0%{transform:translateY(0);opacity:1}
+  45%{transform:translateY(-9px);opacity:0}
+  55%{transform:translateY(9px);opacity:0}
+  100%{transform:translateY(0);opacity:1}
+}
+.header-status{font-size:.74rem;color:var(--text-dim);line-height:1.3}
+.icon-btn{
+  background:none;border:none;cursor:pointer;font-size:1.15rem;
+  width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
+  color:var(--accent);transition:background .2s;
+}
+.icon-btn:hover{background:var(--accent-soft)}
 
-        .typing-indicator-bubble {
-            display: flex;
-            align-items: center;
-            background-color: #e4e6eb;
-            color: #050505;
-            padding: 10px 14px;
-            border-radius: 18px;
-            border-top-left-radius: 4px;
-        }
-        .typing-indicator-bubble span {
-            height: 8px;
-            width: 8px;
-            background-color: #8d949e;
-            border-radius: 50%;
-            display: inline-block;
-            margin: 0 2px;
-            animation: typing-dots 1.4s infinite ease-in-out both;
-        }
-        .typing-indicator-bubble span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator-bubble span:nth-child(2) { animation-delay: -0.16s; }
+/* story-style scene progress */
+.progress{
+  display:flex;gap:3px;padding:6px 12px 5px;flex-shrink:0;
+  background:var(--header-bg);border-bottom:1px solid var(--divider);
+}
+.progress i{
+  flex:1;height:3px;border-radius:2px;background:var(--divider);
+  overflow:hidden;position:relative;
+}
+.progress i::after{
+  content:"";position:absolute;inset:0;background:var(--accent);
+  transform:scaleX(0);transform-origin:left;transition:transform .5s ease;
+}
+.progress i.done::after{transform:scaleX(1)}
 
-        @keyframes typing-dots {
-            0%, 80%, 100% { opacity: 0; transform: scale(0.5); }
-            40% { opacity: 1; transform: scale(1); }
-        }
+/* messages */
+.chat-body{
+  flex:1;overflow-y:auto;overscroll-behavior:contain;
+  scroll-behavior:smooth;position:relative;
+}
+.msgs{display:none;flex-direction:column;padding:14px 12px 10px;min-height:100%}
+.msgs.active{display:flex}
+.row{display:flex;margin:1px 0;animation:msg-in .28s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes msg-in{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+.row.in{justify-content:flex-start}
+.row.out{justify-content:flex-end}
+.row .side{width:28px;flex-shrink:0;display:flex;align-items:flex-end;margin-right:8px}
+.side img{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.bubble{
+  position:relative;max-width:72%;
+  padding:8px 13px;border-radius:18px;
+  font-size:.95rem;line-height:1.42;
+  overflow-wrap:anywhere;white-space:pre-wrap;
+}
+.row.in .bubble{background:var(--bubble-in);color:var(--bubble-in-text)}
+.row.out .bubble{background:var(--out-grad);color:#fff}
+/* messenger-style group radii */
+.row.in.g-first .bubble{border-bottom-left-radius:5px}
+.row.in.g-mid .bubble{border-top-left-radius:5px;border-bottom-left-radius:5px}
+.row.in.g-last .bubble{border-top-left-radius:5px}
+.row.out.g-first .bubble{border-bottom-right-radius:5px}
+.row.out.g-mid .bubble{border-top-right-radius:5px;border-bottom-right-radius:5px}
+.row.out.g-last .bubble{border-top-right-radius:5px}
+.bubble em{font-style:italic;opacity:.85}
+.bubble img.media{
+  display:block;max-width:100%;border-radius:12px;margin:6px -3px 0;
+  cursor:zoom-in;
+}
+.bubble.media-only{padding:3px;background:none !important}
+.bubble.media-only img.media{margin:0}
+.bubble video{display:block;width:100%;max-width:260px;border-radius:12px;margin:6px -3px 0;background:#000}
+.row.has-react{margin-bottom:16px}
+.react-badge{
+  position:absolute;bottom:-11px;font-size:.78rem;line-height:1;
+  background:var(--phone-bg);border:1px solid var(--divider);
+  border-radius:999px;padding:2.5px 5px;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+  animation:react-pop .45s cubic-bezier(.2,1.6,.4,1);
+}
+.row.out .react-badge{left:-4px}
+.row.in .react-badge{right:-4px}
+@keyframes react-pop{from{transform:scale(0)}to{transform:scale(1)}}
+.seen-row{
+  display:flex;justify-content:flex-end;padding:3px 4px 0;
+  animation:msg-in .3s ease;
+}
+.seen-row img{width:15px;height:15px;border-radius:50%;object-fit:cover}
+.seen-row span{font-size:.68rem;color:var(--text-dim);margin-right:5px;align-self:center}
 
-        .navigation-area {
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #f0f2f5;
-            border-top: 1px solid #ddd;
-            flex-shrink: 0;
-        }
-        .scene-progress {
-            font-size: 0.85em;
-            color: #65676b;
-            font-weight: 600;
-        }
-        .nav-button {
-            background-color: #42b72a;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: background-color 0.3s, transform 0.1s ease-out;
-        }
-        .nav-button.replay {
-            background-color: #E91E63;
-        }
-        .nav-button:disabled {
-            background-color: #ccd0d5;
-            cursor: not-allowed;
-        }
-        .nav-button:hover:not(:disabled) {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-        .nav-button:active:not(:disabled) {
-            transform: translateY(0px);
-        }
+/* payment card */
+.pay-card{
+  background:linear-gradient(135deg,#a50064 0%,#d82d8b 100%);
+  color:#fff;border-radius:16px;padding:13px 16px;min-width:180px;
+  white-space:normal;
+}
+.pay-card .pay-top{display:flex;align-items:center;gap:8px;font-size:.8rem;opacity:.9}
+.pay-card .pay-amount{font-size:1.5rem;font-weight:800;margin:5px 0 2px}
+.pay-card .pay-note{font-size:.75rem;opacity:.85;font-style:italic}
 
-        .celebration-emoji {
-            position: fixed;
-            bottom: -50px;
-            font-size: 26px;
-            pointer-events: none;
-            z-index: 999;
-            animation: float-up linear forwards;
-        }
-        @keyframes float-up {
-            to { transform: translateY(-115vh) rotate(340deg); opacity: 0; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .message-row { animation: none; }
-            .chat-messages { scroll-behavior: auto; }
-            .celebration-emoji { display: none; }
-        }
+/* system / narrator / dividers */
+.sys{
+  align-self:center;text-align:center;max-width:86%;
+  font-size:.76rem;color:var(--text-dim);
+  margin:10px 0;animation:msg-in .3s ease;
+}
+.sys .sys-ava{
+  display:block;width:66px;height:66px;border-radius:50%;object-fit:cover;
+  margin:8px auto 0;border:3px solid var(--accent-soft);
+}
+.narrator{
+  align-self:center;text-align:center;max-width:88%;
+  font-size:.83rem;font-style:italic;line-height:1.5;color:var(--text-dim);
+  background:var(--accent-soft);border-radius:14px;padding:10px 16px;
+  margin:12px 0;animation:msg-in .35s ease;
+}
+.divider{
+  align-self:center;display:flex;align-items:center;gap:8px;
+  margin:16px 0 8px;animation:msg-in .3s ease;
+}
+.divider b{
+  font-size:.72rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--accent);background:var(--accent-soft);
+  border-radius:999px;padding:4px 12px;
+}
+/* typing indicator */
+.typing .bubble{display:flex;gap:4px;align-items:center;padding:12px 14px}
+.typing .bubble s{
+  width:7px;height:7px;border-radius:50%;background:var(--text-dim);
+  display:inline-block;animation:blink 1.3s infinite ease-in-out both;
+}
+.typing .bubble s:nth-child(2){animation-delay:.15s}
+.typing .bubble s:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,70%,100%{opacity:.25;transform:scale(.8)}35%{opacity:1;transform:scale(1)}}
 
-        /* Responsive Adjustments */
-        @media (max-width: 600px) {
-            .chat-header { font-size: 1em; padding: 8px 12px; }
-            .header-avatar { width: 30px; height: 30px; margin-right: 8px; }
-            .message-bubble { font-size: 0.9em; padding: 7px 10px; }
-            .avatar { width: 28px; height: 28px; }
-            .hieu-button { font-size: 0.9em; padding: 9px 12px; }
-            .nav-button { font-size: 0.85em; padding: 8px 15px; }
-            .message-content-wrapper { max-width: 85%; }
-        }
-        @media (max-width: 400px) {
-            .chat-header { font-size: 0.9em; }
-            .message-bubble { font-size: 0.85em; }
-            .hieu-button, .nav-button { font-size: 0.8em; }
-        }
-    </style>
+/* continue pill */
+.continue-pill{
+  position:absolute;left:50%;bottom:76px;transform:translateX(-50%);
+  z-index:4;border:none;cursor:pointer;
+  background:var(--accent);color:#fff;font-weight:700;font-size:.88rem;
+  padding:10px 22px;border-radius:999px;
+  box-shadow:0 8px 20px rgba(0,0,0,.28);
+  animation:pill-in .4s cubic-bezier(.2,1.4,.4,1), bob 2s 0.4s ease-in-out infinite;
+  white-space:nowrap;
+}
+@keyframes pill-in{from{transform:translate(-50%,16px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
+.continue-pill.hidden{display:none}
+
+/* composer */
+.composer{
+  flex-shrink:0;padding:8px 10px;
+  padding-bottom:max(8px, env(safe-area-inset-bottom));
+  border-top:1px solid var(--divider);background:var(--phone-bg);
+}
+.media-chip{
+  display:none;align-items:center;gap:8px;margin:0 4px 8px;
+  background:var(--composer-bg);border-radius:12px;padding:6px 10px;
+  font-size:.78rem;color:var(--text-dim);
+  animation:msg-in .25s ease;
+}
+.media-chip.show{display:flex}
+.media-chip img{width:38px;height:38px;border-radius:8px;object-fit:cover}
+.composer-row{display:flex;align-items:flex-end;gap:8px}
+.fake-input{
+  flex:1;min-height:40px;max-height:100px;overflow:hidden;
+  background:var(--composer-bg);border-radius:20px;
+  padding:9px 16px;font-size:.95rem;line-height:1.45;color:var(--text);
+  display:flex;align-items:center;flex-wrap:wrap;
+}
+.fake-input .ph{color:var(--text-dim)}
+.caret{
+  display:none;width:2px;height:1.1em;background:var(--accent);
+  margin-left:1px;animation:caret-blink .9s steps(1) infinite;
+}
+.fake-input.typing-now .caret{display:inline-block}
+.fake-input.typing-now .ph{display:none}
+@keyframes caret-blink{50%{opacity:0}}
+.send-btn{
+  width:42px;height:42px;flex-shrink:0;border:none;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;
+  background:var(--composer-bg);color:var(--text-dim);
+  transition:background .25s,color .25s,transform .15s;
+}
+.send-btn svg{width:20px;height:20px;fill:currentColor;margin-left:2px}
+.send-btn:disabled{cursor:default}
+.send-btn.ready{
+  background:var(--accent);color:#fff;
+  animation:send-pulse 1.4s ease-in-out infinite;
+}
+@keyframes send-pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(233,30,99,.5)}
+  55%{box-shadow:0 0 0 10px rgba(233,30,99,0)}
+}
+.send-btn.ready:active{transform:scale(.88)}
+
+/* ============ End screen ============ */
+.end{
+  z-index:6;align-items:center;justify-content:center;text-align:center;
+  background:linear-gradient(165deg,#7b2ff7 0%,#e91e63 55%,#ff5e9c 100%);
+  color:#fff;padding:30px;
+}
+.end canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.end-card{
+  position:relative;max-width:330px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.35);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-radius:24px;padding:34px 26px;
+  box-shadow:0 20px 50px rgba(0,0,0,.3);
+  animation:end-in .7s cubic-bezier(.2,1.2,.4,1);
+}
+@keyframes end-in{from{transform:translateY(40px) scale(.9);opacity:0}to{transform:none;opacity:1}}
+.end-cake{font-size:3.4rem;display:inline-block;animation:cake-bounce 2.2s ease-in-out infinite}
+@keyframes cake-bounce{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+.end h1{margin:14px 0 6px;font-size:1.55rem}
+.end .sub{margin:0 0 18px;font-size:1rem;opacity:.95}
+.end blockquote{
+  margin:0 0 22px;font-size:.9rem;font-style:italic;line-height:1.6;
+  opacity:.92;border-left:3px solid rgba(255,255,255,.6);
+  padding-left:12px;text-align:left;
+}
+.end .sign{display:block;margin-top:8px;font-style:normal;font-weight:700;text-align:right}
+.btn-replay{
+  background:#fff;color:#e91e63;border:none;cursor:pointer;
+  font-size:.95rem;font-weight:700;padding:12px 28px;border-radius:999px;
+  box-shadow:0 8px 22px rgba(0,0,0,.25);
+  transition:transform .15s ease;
+}
+.btn-replay:hover{transform:translateY(-2px)}
+
+/* lightbox for photos */
+.lightbox{
+  position:fixed;inset:0;z-index:50;display:none;
+  background:rgba(0,0,0,.9);cursor:zoom-out;
+  align-items:center;justify-content:center;padding:20px;
+}
+.lightbox.show{display:flex;animation:msg-in .2s ease}
+.lightbox img{max-width:100%;max-height:100%;border-radius:10px}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+  .chat-body{scroll-behavior:auto}
+}
+</style>
 </head>
 <body>
-    <div class="chat-container" id="chatContainer">
-        <div class="chat-header" id="chatHeader" role="banner">
-            <img src="" alt="Avatar Tiêu đề" class="header-avatar" id="headerAvatar" style="display: none;" loading="lazy">
-            <span class="header-name" id="headerName">Đang tải...</span>
-        </div>
-        <div class="chat-messages" id="chatMessages" aria-live="polite" aria-atomic="false"></div>
-        <div class="hieu-actions" id="hieuActions" role="group" aria-label="Lựa chọn của Hiếu"></div>
-        <div class="navigation-area" id="navigationArea">
-            <span class="scene-progress" id="sceneProgress"></span>
-            <button class="nav-button" id="nextSceneButton" style="display: none;" aria-label="Chuyển đến cảnh tiếp theo">Cảnh Tiếp</button>
-            <button class="nav-button replay" id="replayButton" style="display: none;" aria-label="Xem lại câu chuyện từ đầu">Xem lại từ đầu 🔄</button>
-        </div>
+<div class="phone" id="phone">
+
+  <!-- ===== Intro ===== -->
+  <section class="screen intro" id="introScreen">
+    <div class="floaters" aria-hidden="true">
+      <span style="top:8%;left:12%">💌</span>
+      <span style="top:16%;right:14%;animation-delay:-2s">🎂</span>
+      <span style="bottom:22%;left:10%;animation-delay:-4s">🎈</span>
+      <span style="bottom:12%;right:16%;animation-delay:-1s">💖</span>
+      <span style="top:42%;left:4%;animation-delay:-3s">✨</span>
+      <span style="top:55%;right:5%;animation-delay:-5s">🧶</span>
     </div>
+    <div class="intro-card">
+      <img class="intro-ava" src="images/HueMan.jpg" alt="Mẫn">
+      <h1>Gửi Mẫn 💌</h1>
+      <p>Có một câu chuyện muốn kể cho mày nghe —<br>bằng <b>20 cảnh chat</b> của tụi mình 💬</p>
+      <button class="btn-open" id="openBtn">Mở quà 🎁</button>
+      <div class="hint">Nhớ bật loa lên nha 🔊</div>
+    </div>
+  </section>
 
-    <script>
-        const rawScriptText = `
-1.
-Hiếu: Mẫn à có muốn xuống D3 ngồi chơi không?
-Mẫn: Ko
-2.
-Hiếu: *đăng note* Tôi muốn chết quá đi mất
-Mẫn: *reply note* *Cãi lộn với Trung Hiếu 2 tiếng đồng hồ và không bao giờ nhắc tới chủ đề này nữa*
-3.
-Hiếu: Mẫnnnnnnnn, cho t mượn 100k được không, đói bụng quáaaa
-Mẫn: OK
-Mẫn: *chuyển 99K*
-Mẫn: Rồi đó.
-Hiếu: Jz bà nọi, sao có 99k z
-Mẫn: T góp hết tài sản của t cho m r đó
-Hiếu đã đổi biệt danh của Mẫn thành nữ thần Momo
-4.
-Mẫn: Mai đi coi phim 0?
-Hiếu: Hết tiền r :(. Cho ghi nợ nha, hihi
-Mẫn: Ok, z mai 12h30 Thám tử Kiên nha
-Hiếu: Dạ.
-5.
-Hiếu: Sốp ơi còn mẫu này không ạ?
-Tiệm Cuộn Len: *Tin nhắn tự động* Xin chào, cảm ơn bạn đã liên hệ với Tiệm Cuộn Len. Tiệm sẽ cố gắng trả lời tin nhắn của bạn trong thời gian sớm nhất có thể <3.
-Hiếu: *gửi link mẫu*
-Tiệm Cuộn Len: *5 tiếng sau* Tiệm đang trong thời gian bảo trì, khi nào tiệm nhận đơn tiệm sẽ liên hệ báo giá và chốt đơn cho bạn nha. Cảm ơn bạn
-6. 2 tháng sau
-Tiệm Cuộn Len: Hi bạn
-Tiệm Cuộn Len: Tiệm bắt đầu nhận đơn nha
-Tiệm Cuộn Len: Bạn muốn size như nào
-Tiệm Cuộn Len: Bạn còn nhu cần hong
-Hiếu: Đổi con đc k sốp
-Tiệm Cuộn Len: Đc nha
-Tiệm Cuộn Len: Lựa lẹ cho sốp
-Hiếu: Cho e 15p
-*6 tiếng sau*
-Tiệm Cuộn Len: Có chốt ch
-Tiệm Cuộn Len: Shop đang ế nè
-Hiếu: Ủa tưởng đang đông đơn
-Tiệm Cuộn Len: Thì nhận trước tính sau
-Tiệm Cuộn Len: không thì khỏi xếp lịch
-Tiệm Cuộn Len: Chờ mùa mưa năm sau:
-Hiếu: *gửi link youtube con ma bằng len*(add image conmadom)
-Hiếu: Dạ đây ạ
-Tiệm Cuộn Len: Gửi hình
-Tiệm Cuộn Len: Mắc công sóp phải coi vi đê ô
-Hiếu: Cái này cũng đc sốp ạ
-Hiếu: *gửi hình con ma 1*(add image conma1)
-Hiếu: *gửi hình con ma 2*(add image conma2)
-Tiệm Cuộn Len: Nào xong thì mặc sốp coi
-Tiệm Cuộn Len: Con ma thì đc, quả bí hơi nhỏ
-Hiếu: Dạ sao cũng được, hoi lỡ r có bí có mũ luôn nha, móc k đc thì bỏ qua
-Tiệm Cuộn Len: Ý là thách thức shop hả
-Hiếu: Dạ k ạ…*(Tiệm Cuộn Len react ok trên tin nhắn)*
-1 năm sau, chị ấy vẫn không giao con ma cho tôi, có một tin đồn là chị ấy quỵt đơn luôn, mãn kiếp trả
-7.
-Mẫn: Dô like share cho sốp chưa?
-Hiếu: Dạ
-8.
-Mẫn: Xuống D3 chơi không?
-Hiếu: Chiện lạ z, chờ e, ok?
-9.
-Mẫn: Mai m đi xe với ai?
-Hiếu: Dạ anh
-Mẫn: 6h20
-Mẫn: 8 tiếng sau trễ xíu, nào xún t nói
-Hiếu: Dạ
-10.
-Mẫn: 90
-Mẫn: 67
-Mẫn: 57
-Mẫn: 40
-Mẫn: 30
-Mẫn: 16
-Mẫn: 10
-Hiếu: Ròi hết nợ nha*(Mẫn react trái tim)*
-11.
-Hiếu: A xuống chưa
-Mẫn: Đợi xíu, ank đang bay xuống nè
-12.
-Hiếu: 45
-Hiếu: 35
-Hiếu: 10
-Hiếu: Rồi hết nợ nha
-Mẫn chỉ seen
-13.
-Hiếu: Chúc mừng sinh nhật nha…”một tràng dài 5 dòng”
-Mẫn: Chồ ôi cảm ơn em yêu nhiều nhaaaaa
-14.
-Mẫn:*giựt cơ miệng*, *(tự nhiên thôi)*
-Hiếu: Sao mỏ m giựt quài z, khó chịu hà, đó nó giựt nữa kìa
-Mẫn: *giựt mỏ tiếp* Cơ địa, cơ địa mà, ai mà khó chịu với mày
-15. 30/9/2024
-Mẫn: Trời ơi em có bao giờ gửi hình dìm chị bao giờ!!!(Đang nói chị Thảo)
-*Trong group Sinh Nhật Chị Thảo*
-Mẫn: Nè
-Mẫn: *Gửi nhiều hình dìm và clip của chị Thảo nhất, quay hình dìm bà Thảo nhiều nhất, set luôn avatar hình dìm*
-*Mẫn đã đổi hình đại diện của cô ấy* (note: image 30092024)
-Mẫn: hihi
-16.
-*Mẫn đã share một bài viết* (add image: hinh1)
-Hiếu: 1p trứng thịt kho+bò xào cá viên chiên cơm thêm canh thêm 30k
-Mẫn: T quyết định là khỏi 30k, 25k thôi
-Mẫn: Đỡ mệt, lằng nhằng
-17.
-*Mẫn đã share một bài viết*(add image: hinh2)
-*Hiếu gửi minh chứng đi 3k bước trong 5 ngày liên tục*(add image: hinh3)
-*Hiếu gửi minh chứng đi 3k bước trong 5 ngày liên tục*(add image: hinh4)
-*Mẫn thả tim*
-18.
-Mẫn: Ê
-Hiếu: Ơi
-*Mẫn seen và im lặng không rep*
-19.
-Mẫn: Mới đầu vô tưởng mày trai thẳng
-Hiếu: Bộ giống lắm hả
-Mẫn: Ờ, cho đến khi thấy cái tướng chạy của mày
-20.
-Hiếu: 20 à, phải rồi, năm nay Mẫn 20 tuổi nhỉ, cảm ơn mày vì đã đồng hành cũng tao 1/10 cuộc đời của mày, mong mày giàu
-Hiếu: Chúc mày luôn được như này: (stream video: images/1.mp4)
-Hiếu: Và: CHÚC MỪNG SINH NHẬT NHA: (stream VIDEO: images/2.mp4)
-        `;
+  <!-- ===== Chat ===== -->
+  <section class="screen chat gone" id="chatScreen" data-theme="man">
+    <header class="chat-header">
+      <div class="ava-wrap">
+        <img class="header-ava" id="headerAva" src="images/HueMan.jpg" alt="">
+        <span class="online-dot" id="onlineDot"></span>
+      </div>
+      <div class="header-meta">
+        <div class="header-name" id="headerName">Mẫn</div>
+        <div class="header-status" id="headerStatus">Đang hoạt động</div>
+      </div>
+      <button class="icon-btn" id="soundBtn" aria-label="Bật / tắt âm thanh">🔊</button>
+    </header>
+    <div class="progress" id="progressBar" aria-hidden="true"></div>
 
-        const TYPING_DURATION = 1200;
-        const MESSAGE_CONTINUOUS_DELAY = 700;
-        const HIEU_POST_MESSAGE_DELAY = 500;
-        const SYSTEM_MESSAGE_DELAY = 1000;
+    <main class="chat-body" id="chatBody">
+      <div class="msgs active" id="msgs-man" aria-live="polite"></div>
+      <div class="msgs" id="msgs-shop" aria-live="polite"></div>
+    </main>
 
-        function slugify(text) {
-            if (typeof text !== 'string') return '';
-            let slug = text.toString().toLowerCase();
-            slug = slug.normalize('NFKD').replace(/[\u0300-\u036f]/g, "");
-            slug = slug.replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
-            return slug;
-        }
+    <button class="continue-pill hidden" id="continuePill">Tiếp tục ▸</button>
 
-        function escapeHtml(text) {
-            if (typeof text !== 'string') return '';
-            return text
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
-        }
+    <footer class="composer">
+      <div class="media-chip" id="mediaChip"></div>
+      <div class="composer-row">
+        <div class="fake-input" id="fakeInput">
+          <span class="ph">Aa</span><span id="inputText"></span><span class="caret"></span>
+        </div>
+        <button class="send-btn" id="sendBtn" disabled aria-label="Gửi tin nhắn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </footer>
+  </section>
 
-        // Escapes the raw text first, then renders *...* segments as <em> —
-        // no third-party sanitizer needed since only these tags can appear.
-        function formatText(text) {
-            return escapeHtml(text).replace(/\*(.*?)\*/g, '<em>$1</em>');
-        }
+  <!-- ===== Ending ===== -->
+  <section class="screen end gone" id="endScreen">
+    <canvas id="confettiCanvas"></canvas>
+    <div class="end-card">
+      <span class="end-cake" aria-hidden="true">🎂</span>
+      <h1>Chúc mừng sinh nhật, Mẫn!</h1>
+      <p class="sub">20 tuổi rồi đó nha 🥳</p>
+      <blockquote>
+        “Cảm ơn mày vì đã đồng hành cùng tao 1/10 cuộc đời của mày. Mong mày giàu.”
+        <span class="sign">— Hiếu ❤️</span>
+      </blockquote>
+      <button class="btn-replay" id="replayBtn">Xem lại từ đầu 🔄</button>
+    </div>
+  </section>
+</div>
 
-        function parseScript(rawText) {
-            const scenes = [];
-            const sceneBlocks = rawText.trim().split(/\n(?=\d+\.\s*)/);
-            sceneBlocks.forEach((block, index) => {
-                const lines = block.trim().split('\n');
-                const titleLine = lines.shift();
-                let actualSceneNumber = `${index + 1}`, sceneDescriptionFromTitle = "", sceneSubTitle = null;
-                const sceneTitleMatch = titleLine.match(/^(\d+)\.\s*(.*)/);
-                if (sceneTitleMatch) {
-                    actualSceneNumber = sceneTitleMatch[1];
-                    sceneDescriptionFromTitle = sceneTitleMatch[2] ? sceneTitleMatch[2].trim() : "";
-                }
-                const sceneDataTitle = `Scene ${actualSceneNumber}`;
-                if (sceneDescriptionFromTitle) sceneSubTitle = `(${sceneDescriptionFromTitle})`;
-                const messages = [];
-                let sceneHasTiemCuonLen = false;
-                lines.forEach(line => {
-                    line = line.trim();
-                    if (!line) return;
-                    let speaker = "System", text = line, image = null, video = null;
-                    let isAvatarChangeMessage = false, isNicknameChangeMessage = false, newNickname = null;
-                    const speakerMatch = line.match(/^(Hiếu|Mẫn|Tiệm Cuộn Len):\s*(.*)/i);
-                    if (speakerMatch) {
-                        speaker = speakerMatch[1].trim();
-                        text = speakerMatch[2].trim();
-                        if (speaker === 'Tiệm Cuộn Len') sceneHasTiemCuonLen = true;
-                        if (speaker.toLowerCase() === 'mẫn' && text.startsWith("8 tiếng sau")) {
-                            messages.push({ speaker: "System", text: "*8 tiếng sau*", image: null, video: null, isAvatarChangeMessage: false, isNicknameChangeMessage: false, newNickname: null });
-                            text = text.substring("8 tiếng sau".length).replace(/^,?\s*/, "").trim();
-                        }
-                    }
-                    if (line.includes("*Mẫn đã đổi hình đại diện của cô ấy* (note: image 30092024)") && sceneDataTitle === "Scene 15") {
-                        speaker = "System"; text = "*Mẫn đã đổi hình đại diện của cô ấy*"; image = `images/30092024.jpg`; isAvatarChangeMessage = true;
-                    } else if (line.includes("Hiếu đã đổi biệt danh của Mẫn thành nữ thần Momo")) {
-                        speaker = "System"; text = line; isNicknameChangeMessage = true;
-                        const nicknameMatch = text.match(/thành (.*)/);
-                        if (nicknameMatch && nicknameMatch[1]) newNickname = nicknameMatch[1].trim();
-                    }
-                    const imageRegex = /\((?:add image|note: image)\s*:?\s*(.*?)\)/i;
-                    const imageMatchCurrentText = text.match(imageRegex);
-                    if (imageMatchCurrentText) {
-                        image = `images/${imageMatchCurrentText[1].trim().replace(/\s+/g, '_')}.jpg`;
-                        text = text.replace(imageRegex, "").trim();
-                    }
-                    const videoRegex = /\((?:stream video|stream VIDEO):\s*(.*?)\)/i;
-                    const videoMatchCurrentText = text.match(videoRegex);
-                    if (videoMatchCurrentText) {
-                        video = videoMatchCurrentText[1].trim();
-                        text = text.replace(videoRegex, "").trim();
-                    }
-                    if (text || image || video || isAvatarChangeMessage || isNicknameChangeMessage) {
-                        messages.push({ speaker, text, image, video, isAvatarChangeMessage, isNicknameChangeMessage, newNickname });
-                    }
-                });
-                scenes.push({ title: sceneDataTitle, messages, sceneHasTiemCuonLen, sceneSubTitle });
-            });
-            return scenes;
-        }
+<div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt="Ảnh phóng to"></div>
 
-        const scriptData = parseScript(rawScriptText);
+<script>
+"use strict";
+/* ================================================================
+   STORY DATA — the script, hand-structured. Text kept verbatim.
+   Event types:
+     in   – message from the conversation partner
+     out  – message from Hiếu (sent by the reader via the composer)
+     pay  – payment card from the partner
+     sys  – small centered system line
+     narr – narrator card (story aside)
+     seen – "Đã xem" receipt on Hiếu's last message
+     nick – partner nickname change (updates the header)
+     ava  – partner avatar change (updates header + bubbles)
+   Optional on in/out: img, video, react (emoji reaction badge)
+   ================================================================ */
+const SCENES = [
+  { partner:"man", events:[
+    { t:"out", text:"Mẫn à có muốn xuống D3 ngồi chơi không?" },
+    { t:"in",  text:"Ko" },
+  ]},
+  { partner:"man", events:[
+    { t:"out", text:"*đăng note* Tôi muốn chết quá đi mất" },
+    { t:"in",  text:"*reply note* *Cãi lộn với Trung Hiếu 2 tiếng đồng hồ và không bao giờ nhắc tới chủ đề này nữa*" },
+  ]},
+  { partner:"man", events:[
+    { t:"out", text:"Mẫnnnnnnnn, cho t mượn 100k được không, đói bụng quáaaa" },
+    { t:"in",  text:"OK" },
+    { t:"pay", amount:"99K", note:"*chuyển 99K*" },
+    { t:"in",  text:"Rồi đó." },
+    { t:"out", text:"Jz bà nọi, sao có 99k z" },
+    { t:"in",  text:"T góp hết tài sản của t cho m r đó" },
+    { t:"nick", name:"nữ thần Momo", text:"Hiếu đã đổi biệt danh của Mẫn thành nữ thần Momo" },
+  ]},
+  { partner:"man", events:[
+    { t:"in",  text:"Mai đi coi phim 0?" },
+    { t:"out", text:"Hết tiền r :(. Cho ghi nợ nha, hihi" },
+    { t:"in",  text:"Ok, z mai 12h30 Thám tử Kiên nha" },
+    { t:"out", text:"Dạ." },
+  ]},
+  { partner:"shop", events:[
+    { t:"out", text:"Sốp ơi còn mẫu này không ạ?" },
+    { t:"in",  text:"*Tin nhắn tự động* Xin chào, cảm ơn bạn đã liên hệ với Tiệm Cuộn Len. Tiệm sẽ cố gắng trả lời tin nhắn của bạn trong thời gian sớm nhất có thể <3." },
+    { t:"out", text:"*gửi link mẫu*" },
+    { t:"sys", text:"5 tiếng sau" },
+    { t:"in",  text:"Tiệm đang trong thời gian bảo trì, khi nào tiệm nhận đơn tiệm sẽ liên hệ báo giá và chốt đơn cho bạn nha. Cảm ơn bạn" },
+  ]},
+  { partner:"shop", caption:"2 tháng sau", events:[
+    { t:"in",  text:"Hi bạn" },
+    { t:"in",  text:"Tiệm bắt đầu nhận đơn nha" },
+    { t:"in",  text:"Bạn muốn size như nào" },
+    { t:"in",  text:"Bạn còn nhu cần hong" },
+    { t:"out", text:"Đổi con đc k sốp" },
+    { t:"in",  text:"Đc nha" },
+    { t:"in",  text:"Lựa lẹ cho sốp" },
+    { t:"out", text:"Cho e 15p" },
+    { t:"sys", text:"6 tiếng sau" },
+    { t:"in",  text:"Có chốt ch" },
+    { t:"in",  text:"Shop đang ế nè" },
+    { t:"out", text:"Ủa tưởng đang đông đơn" },
+    { t:"in",  text:"Thì nhận trước tính sau" },
+    { t:"in",  text:"không thì khỏi xếp lịch" },
+    { t:"in",  text:"Chờ mùa mưa năm sau:" },
+    { t:"out", text:"*gửi link youtube con ma bằng len*", img:"images/conmadom.jpg" },
+    { t:"out", text:"Dạ đây ạ" },
+    { t:"in",  text:"Gửi hình" },
+    { t:"in",  text:"Mắc công sóp phải coi vi đê ô" },
+    { t:"out", text:"Cái này cũng đc sốp ạ" },
+    { t:"out", text:"*gửi hình con ma 1*", img:"images/conma1.jpg" },
+    { t:"out", text:"*gửi hình con ma 2*", img:"images/conma2.jpg" },
+    { t:"in",  text:"Nào xong thì mặc sốp coi" },
+    { t:"in",  text:"Con ma thì đc, quả bí hơi nhỏ" },
+    { t:"out", text:"Dạ sao cũng được, hoi lỡ r có bí có mũ luôn nha, móc k đc thì bỏ qua" },
+    { t:"in",  text:"Ý là thách thức shop hả" },
+    { t:"out", text:"Dạ k ạ…", react:"👍" },
+    { t:"narr", text:"1 năm sau, chị ấy vẫn không giao con ma cho tôi, có một tin đồn là chị ấy quỵt đơn luôn, mãn kiếp trả" },
+  ]},
+  { partner:"man", events:[
+    { t:"in",  text:"Dô like share cho sốp chưa?" },
+    { t:"out", text:"Dạ" },
+  ]},
+  { partner:"man", events:[
+    { t:"in",  text:"Xuống D3 chơi không?" },
+    { t:"out", text:"Chiện lạ z, chờ e, ok?" },
+  ]},
+  { partner:"man", events:[
+    { t:"in",  text:"Mai m đi xe với ai?" },
+    { t:"out", text:"Dạ anh" },
+    { t:"in",  text:"6h20" },
+    { t:"sys", text:"8 tiếng sau" },
+    { t:"in",  text:"trễ xíu, nào xún t nói" },
+    { t:"out", text:"Dạ" },
+  ]},
+  { partner:"man", events:[
+    { t:"in", text:"90" }, { t:"in", text:"67" }, { t:"in", text:"57" },
+    { t:"in", text:"40" }, { t:"in", text:"30" }, { t:"in", text:"16" },
+    { t:"in", text:"10" },
+    { t:"out", text:"Ròi hết nợ nha", react:"❤️" },
+  ]},
+  { partner:"man", events:[
+    { t:"out", text:"A xuống chưa" },
+    { t:"in",  text:"Đợi xíu, ank đang bay xuống nè" },
+  ]},
+  { partner:"man", events:[
+    { t:"out", text:"45" }, { t:"out", text:"35" }, { t:"out", text:"10" },
+    { t:"out", text:"Rồi hết nợ nha" },
+    { t:"seen", text:"Mẫn chỉ seen" },
+  ]},
+  { partner:"man", events:[
+    { t:"out", text:"Chúc mừng sinh nhật nha…”một tràng dài 5 dòng”" },
+    { t:"in",  text:"Chồ ôi cảm ơn em yêu nhiều nhaaaaa" },
+  ]},
+  { partner:"man", events:[
+    { t:"in",  text:"*giựt cơ miệng*, *(tự nhiên thôi)*" },
+    { t:"out", text:"Sao mỏ m giựt quài z, khó chịu hà, đó nó giựt nữa kìa" },
+    { t:"in",  text:"*giựt mỏ tiếp* Cơ địa, cơ địa mà, ai mà khó chịu với mày" },
+  ]},
+  { partner:"man", caption:"30/9/2024", events:[
+    { t:"in",  text:"Trời ơi em có bao giờ gửi hình dìm chị bao giờ!!!" },
+    { t:"sys", text:"(Đang nói chị Thảo)" },
+    { t:"sys", text:"Trong group Sinh Nhật Chị Thảo" },
+    { t:"in",  text:"Nè" },
+    { t:"in",  text:"*Gửi nhiều hình dìm và clip của chị Thảo nhất, quay hình dìm bà Thảo nhiều nhất, set luôn avatar hình dìm*" },
+    { t:"ava", img:"images/30092024.jpg", text:"Mẫn đã đổi hình đại diện của cô ấy" },
+    { t:"in",  text:"hihi" },
+  ]},
+  { partner:"man", events:[
+    { t:"in",  text:"*Mẫn đã share một bài viết*", img:"images/hinh1.jpg" },
+    { t:"out", text:"1p trứng thịt kho+bò xào cá viên chiên cơm thêm canh thêm 30k" },
+    { t:"in",  text:"T quyết định là khỏi 30k, 25k thôi" },
+    { t:"in",  text:"Đỡ mệt, lằng nhằng" },
+  ]},
+  { partner:"man", events:[
+    { t:"in",  text:"*Mẫn đã share một bài viết*", img:"images/hinh2.jpg" },
+    { t:"out", text:"*Hiếu gửi minh chứng đi 3k bước trong 5 ngày liên tục*", img:"images/hinh3.jpg" },
+    { t:"out", text:"*Hiếu gửi minh chứng đi 3k bước trong 5 ngày liên tục*", img:"images/hinh4.jpg", react:"❤️" },
+  ]},
+  { partner:"man", events:[
+    { t:"in",  text:"Ê" },
+    { t:"out", text:"Ơi" },
+    { t:"seen", text:"Mẫn seen và im lặng không rep" },
+  ]},
+  { partner:"man", events:[
+    { t:"in",  text:"Mới đầu vô tưởng mày trai thẳng" },
+    { t:"out", text:"Bộ giống lắm hả" },
+    { t:"in",  text:"Ờ, cho đến khi thấy cái tướng chạy của mày" },
+  ]},
+  { partner:"man", events:[
+    { t:"out", text:"20 à, phải rồi, năm nay Mẫn 20 tuổi nhỉ, cảm ơn mày vì đã đồng hành cũng tao 1/10 cuộc đời của mày, mong mày giàu" },
+    { t:"out", text:"Chúc mày luôn được như này:", video:"images/1.mp4" },
+    { t:"out", text:"Và: CHÚC MỪNG SINH NHẬT NHA:", video:"images/2.mp4" },
+  ]},
+];
 
-        const MAN_AVATAR_DEFAULT = "images/HueMan.jpg", MAN_AVATAR_SCENE15 = "images/30092024.jpg";
-        const MAN_NICKNAME_DEFAULT = "Mẫn";
-        let currentSceneIndex = 0, currentMessageInScene = 0, manAvatarCurrent = MAN_AVATAR_DEFAULT, manNicknameGlobal = MAN_NICKNAME_DEFAULT;
-        let hieuMessageQueue = [];
-        let storyEnded = false;
-        const chatContainer = document.getElementById('chatContainer');
-        const headerAvatarImg = document.getElementById('headerAvatar');
-        const headerNameSpan = document.getElementById('headerName');
-        const chatMessagesDiv = document.getElementById('chatMessages'), hieuActionsDiv = document.getElementById('hieuActions');
-        const nextSceneButton = document.getElementById('nextSceneButton');
-        const replayButton = document.getElementById('replayButton');
-        const sceneProgressSpan = document.getElementById('sceneProgress');
+const PARTNERS = {
+  man:  { name:"Mẫn", ava:"images/HueMan.jpg", status:"Đang hoạt động", online:true },
+  shop: { name:"Tiệm Cuộn Len", ava:"images/shop.jpg", status:"Thường trả lời sau vài tháng 🧶", online:false },
+};
+const HIEU_AVA = "images/Hieu.jpg";
 
-        nextSceneButton.onclick = () => { if (currentSceneIndex < scriptData.length - 1) loadScene(currentSceneIndex + 1); };
-        replayButton.onclick = () => {
-            manNicknameGlobal = MAN_NICKNAME_DEFAULT;
-            storyEnded = false;
-            replayButton.style.display = 'none';
-            loadScene(0);
-        };
+/* ================= DOM refs ================= */
+const $ = id => document.getElementById(id);
+const introScreen=$("introScreen"), chatScreen=$("chatScreen"), endScreen=$("endScreen");
+const headerAva=$("headerAva"), headerName=$("headerName"), headerStatus=$("headerStatus"), onlineDot=$("onlineDot");
+const progressBar=$("progressBar"), chatBody=$("chatBody");
+const containers={ man:$("msgs-man"), shop:$("msgs-shop") };
+const continuePill=$("continuePill");
+const fakeInput=$("fakeInput"), inputText=$("inputText"), sendBtn=$("sendBtn"), mediaChip=$("mediaChip");
+const soundBtn=$("soundBtn"), openBtn=$("openBtn"), replayBtn=$("replayBtn");
+const lightbox=$("lightbox"), lightboxImg=$("lightboxImg");
 
-        function getAvatar(speaker, forHeader = false) {
-            const name = speaker.toLowerCase();
-            if (name === 'hiếu') return 'images/Hieu.jpg';
-            if (name === 'mẫn') {
-                return forHeader ? manAvatarCurrent : (scriptData[currentSceneIndex]?.title === "Scene 15" && manAvatarCurrent === MAN_AVATAR_SCENE15 ? MAN_AVATAR_SCENE15 : MAN_AVATAR_DEFAULT);
-            }
-            if (speaker === 'Tiệm Cuộn Len') return 'images/shop.jpg';
-            return `https://placehold.co/40x40/CCC/777?text=${getDisplayName(speaker).charAt(0).toUpperCase()}`;
-        }
-        function getDisplayName(speaker) {
-            if (speaker.toLowerCase() === 'mẫn') return manNicknameGlobal;
-            return speaker;
-        }
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-        function updateSceneProgress() {
-            sceneProgressSpan.textContent = `Cảnh ${Math.min(currentSceneIndex + 1, scriptData.length)}/${scriptData.length}`;
-        }
+/* ================= Runtime state ================= */
+let runToken=0;
+let activePartner=null;
+let nicknames={};             // partner id -> display name override
+let avatars={};               // partner id -> avatar override
+let lastSender={man:null, shop:null};   // for message grouping
+let lastRow={man:null, shop:null};
+let fastForward=false;        // tap-to-skip flag, reset per event
+let soundOn = localStorage.getItem("gm_sound") !== "off";
+soundBtn.textContent = soundOn ? "🔊" : "🔇";
 
-        function scrollChatToBottom() {
-            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-        }
+/* ================= Small utilities ================= */
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+                  .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+const fmt = s => esc(s).replace(/\*(.*?)\*/g,"<em>$1</em>");
+const plain = s => s.replace(/\*(.*?)\*/g,"$1");
 
-        function showTypingIndicator(speaker) {
-            hideTypingIndicator();
-            const speakerDisplayName = getDisplayName(speaker), avatarSrc = getAvatar(speaker);
-            const indicatorHTML = `<div class="message-row other-speaker typing-indicator-row" id="typingIndicatorActive"><div class="message-content-wrapper"><img src="${avatarSrc}" alt="${escapeHtml(speakerDisplayName)} đang nhắn" class="avatar" loading="lazy" onerror="this.src='https://placehold.co/40x40/CCC/777?text=${speakerDisplayName.charAt(0).toUpperCase()}'"><div class="message-details"><div class="speaker-name">${escapeHtml(speakerDisplayName)}</div><div class="message-bubble typing-indicator-bubble"><span></span><span></span><span></span></div></div></div></div>`;
-            chatMessagesDiv.insertAdjacentHTML('beforeend', indicatorHTML);
-            scrollChatToBottom();
-        }
-        function hideTypingIndicator() { const indicator = document.getElementById('typingIndicatorActive'); if (indicator) indicator.remove(); }
+let waitCancel=null;
+function wait(ms){
+  if (fastForward) return Promise.resolve();
+  return new Promise(res=>{
+    const t=setTimeout(()=>{waitCancel=null;res();},ms);
+    waitCancel=()=>{clearTimeout(t);waitCancel=null;res();};
+  });
+}
+chatBody.addEventListener("click", e=>{
+  if (e.target.closest("img.media,video,a,button")) return;
+  fastForward=true;
+  if (waitCancel) waitCancel();
+});
 
-        function displayMessage(msgData) {
-            const { speaker, text, image, video, isAvatarChangeMessage, isNicknameChangeMessage, newNickname } = msgData;
-            if (isNicknameChangeMessage && newNickname) {
-                manNicknameGlobal = newNickname;
-                const scene = scriptData[currentSceneIndex];
-                if (scene && !scene.sceneHasTiemCuonLen) {
-                    headerNameSpan.textContent = manNicknameGlobal + (scene.sceneSubTitle ? ` ${scene.sceneSubTitle}` : "");
-                    headerAvatarImg.src = getAvatar("Mẫn", true);
-                    headerAvatarImg.alt = manNicknameGlobal + " Avatar";
-                    headerAvatarImg.style.display = 'block';
-                }
-            }
-            const messageRow = document.createElement('div'); messageRow.classList.add('message-row');
-            const messageBubble = document.createElement('div'); messageBubble.classList.add('message-bubble');
-            if (text) {
-                const messageTextDiv = document.createElement('p'); messageTextDiv.classList.add('message-text');
-                messageTextDiv.innerHTML = formatText(text);
-                messageBubble.appendChild(messageTextDiv);
-            }
+function scrollDown(){
+  requestAnimationFrame(()=>{ chatBody.scrollTop = chatBody.scrollHeight; });
+}
 
-            if (image) {
-                const imgElement = document.createElement('img'); imgElement.src = image;
-                imgElement.alt = image.split('/').pop().split('.')[0] || 'Hình trong đoạn chat';
-                imgElement.loading = "lazy";
-                imgElement.onerror = function() { this.src = `https://placehold.co/300x200/EEE/333?text=Error+${encodeURIComponent(this.alt)}`; this.onerror = null; };
-                imgElement.onload = scrollChatToBottom;
-                messageBubble.appendChild(imgElement);
-            }
-            if (video) {
-                const videoElement = document.createElement('video');
-                videoElement.src = video;
-                videoElement.controls = true;
-                videoElement.playsInline = true;
-                videoElement.preload = "metadata";
-                videoElement.onloadedmetadata = scrollChatToBottom;
-                // Browsers block unmuted autoplay without a gesture; the Hiếu
-                // button click usually counts as one, but fall back to controls.
-                videoElement.play().catch(() => {});
-                messageBubble.appendChild(videoElement);
-            }
+function partnerName(p){ return nicknames[p] || PARTNERS[p].name; }
+function partnerAva(p){ return avatars[p] || PARTNERS[p].ava; }
 
-            if (speaker.toLowerCase() === 'system') {
-                messageBubble.classList.add('system'); messageRow.style.justifyContent = 'center';
-                messageRow.appendChild(messageBubble);
-            } else {
-                messageRow.classList.add(slugify(speaker) + '-speaker');
-                if (slugify(speaker) !== 'hieu') messageRow.classList.add('other-speaker');
-                const contentWrapper = document.createElement('div'); contentWrapper.classList.add('message-content-wrapper');
-                const avatarImg = document.createElement('img'); avatarImg.classList.add('avatar');
-                avatarImg.src = getAvatar(speaker); avatarImg.alt = getDisplayName(speaker) + ' avatar';
-                avatarImg.loading = "lazy";
-                avatarImg.onerror = function() { this.src = `https://placehold.co/40x40/CCC/777?text=${getDisplayName(speaker).charAt(0).toUpperCase()}`; this.onerror = null; };
-                const messageDetailsDiv = document.createElement('div'); messageDetailsDiv.classList.add('message-details');
-                if (speaker.toLowerCase() !== 'hiếu') {
-                    const speakerNameDiv = document.createElement('div'); speakerNameDiv.classList.add('speaker-name');
-                    speakerNameDiv.textContent = getDisplayName(speaker);
-                    messageDetailsDiv.appendChild(speakerNameDiv);
-                }
-                messageBubble.classList.add(slugify(speaker));
-                messageDetailsDiv.appendChild(messageBubble);
-                contentWrapper.appendChild(avatarImg); contentWrapper.appendChild(messageDetailsDiv);
-                messageRow.appendChild(contentWrapper);
-            }
-            chatMessagesDiv.appendChild(messageRow);
-            scrollChatToBottom();
-            if (isAvatarChangeMessage && scriptData[currentSceneIndex]?.title === "Scene 15") {
-                manAvatarCurrent = MAN_AVATAR_SCENE15;
-                const scene = scriptData[currentSceneIndex];
-                if (scene && !scene.sceneHasTiemCuonLen) {
-                    headerAvatarImg.src = manAvatarCurrent;
-                }
-            }
-        }
+/* ================= Sound (WebAudio pops) ================= */
+let audioCtx=null;
+function pop(kind){
+  if(!soundOn) return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    if (audioCtx.state==="suspended") audioCtx.resume();
+    const t=audioCtx.currentTime;
+    const osc=audioCtx.createOscillator(), g=audioCtx.createGain();
+    osc.type="sine";
+    osc.frequency.setValueAtTime(kind==="send"?920:540, t);
+    osc.frequency.exponentialRampToValueAtTime(kind==="send"?620:380, t+.11);
+    g.gain.setValueAtTime(.09, t);
+    g.gain.exponentialRampToValueAtTime(.001, t+.13);
+    osc.connect(g).connect(audioCtx.destination);
+    osc.start(t); osc.stop(t+.14);
+  }catch(e){}
+}
+soundBtn.addEventListener("click", ()=>{
+  soundOn=!soundOn;
+  soundBtn.textContent = soundOn ? "🔊" : "🔇";
+  localStorage.setItem("gm_sound", soundOn ? "on" : "off");
+});
 
-        function launchCelebration() {
-            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-            const emojis = ['💖', '🎂', '🎉', '💗', '🎈', '✨', '🥳'];
-            for (let i = 0; i < 45; i++) {
-                setTimeout(() => {
-                    const el = document.createElement('span');
-                    el.classList.add('celebration-emoji');
-                    el.setAttribute('aria-hidden', 'true');
-                    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-                    el.style.left = `${Math.random() * 100}vw`;
-                    el.style.animationDuration = `${4 + Math.random() * 4}s`;
-                    el.style.fontSize = `${18 + Math.random() * 18}px`;
-                    document.body.appendChild(el);
-                    el.addEventListener('animationend', () => el.remove());
-                }, i * 180);
-            }
-        }
+/* ================= Header / theme ================= */
+function applyHeader(p, animateName){
+  chatScreen.dataset.theme = p;
+  headerAva.src = partnerAva(p);
+  headerAva.alt = partnerName(p);
+  if (animateName){
+    headerName.classList.remove("flip"); void headerName.offsetWidth;
+    headerName.classList.add("flip");
+  }
+  headerName.textContent = partnerName(p);
+  headerStatus.textContent = PARTNERS[p].status;
+  onlineDot.style.display = PARTNERS[p].online ? "block" : "none";
+}
 
-        function showEnding() {
-            headerNameSpan.textContent = manNicknameGlobal;
-            headerAvatarImg.src = getAvatar("Mẫn", true);
-            headerAvatarImg.alt = manNicknameGlobal + " Avatar";
-            headerAvatarImg.style.display = 'block';
-            chatContainer.classList.add('theme-rose');
-            hieuActionsDiv.innerHTML = '';
-            nextSceneButton.style.display = 'none';
-            replayButton.style.display = 'block';
-            if (!storyEnded) {
-                storyEnded = true;
-                launchCelebration();
-            }
-        }
+async function switchConversation(p){
+  if (activePartner===p) return;
+  if (activePartner){
+    containers[activePartner].classList.remove("active");
+    await wait(reducedMotion?0:260);
+  }
+  activePartner=p;
+  applyHeader(p, false);
+  containers[p].classList.add("active");
+  scrollDown();
+}
 
-        function updateNextSceneButtonVisibility() {
-            if (currentSceneIndex < scriptData.length - 1) { nextSceneButton.style.display = 'block'; nextSceneButton.disabled = false; }
-            else nextSceneButton.style.display = 'none';
-        }
+/* ================= Progress bar ================= */
+for (let i=0;i<SCENES.length;i++){ progressBar.appendChild(document.createElement("i")); }
+function setProgress(n){
+  [...progressBar.children].forEach((seg,i)=>seg.classList.toggle("done", i<n));
+}
 
-        function processNextMessage() {
-            const scene = scriptData[currentSceneIndex];
-            if (!scene) { showEnding(); return; }
-            if (currentMessageInScene >= scene.messages.length && hieuMessageQueue.length === 0) {
-                if (currentSceneIndex < scriptData.length - 1) updateNextSceneButtonVisibility();
-                else showEnding();
-                return;
-            }
-            if (currentMessageInScene < scene.messages.length) {
-                const messageData = scene.messages[currentMessageInScene];
-                if (messageData.speaker.toLowerCase() === 'hiếu') {
-                    while (currentMessageInScene < scene.messages.length && scene.messages[currentMessageInScene].speaker.toLowerCase() === 'hiếu') {
-                        hieuMessageQueue.push(scene.messages[currentMessageInScene]); currentMessageInScene++;
-                    }
-                    renderHieuButtons();
-                } else {
-                    const isSystemMsg = messageData.speaker.toLowerCase() === 'system';
-                    const delay = isSystemMsg ? SYSTEM_MESSAGE_DELAY : TYPING_DURATION;
-                    if (!isSystemMsg) showTypingIndicator(messageData.speaker);
-                    setTimeout(() => {
-                        if (!isSystemMsg) hideTypingIndicator();
-                        displayMessage(messageData); currentMessageInScene++;
-                        const nextMessagePeek = (currentMessageInScene < scene.messages.length) ? scene.messages[currentMessageInScene] : null;
-                        if (nextMessagePeek && nextMessagePeek.speaker === messageData.speaker && !isSystemMsg) setTimeout(processNextMessage, MESSAGE_CONTINUOUS_DELAY);
-                        else processNextMessage();
-                    }, delay);
-                }
-            } else if (hieuMessageQueue.length > 0) renderHieuButtons();
-            if (currentMessageInScene >= scene.messages.length && hieuMessageQueue.length === 0) updateNextSceneButtonVisibility();
-            else nextSceneButton.style.display = 'none';
-        }
+/* ================= Message rendering ================= */
+function breakGrouping(p){ lastSender[p]=null; lastRow[p]=null; }
 
-        function renderHieuButtons() {
-            hieuActionsDiv.innerHTML = ''; nextSceneButton.style.display = 'none';
-            if (hieuMessageQueue.length > 0) {
-                const hieuMsg = hieuMessageQueue[0];
-                const button = document.createElement('button'); button.classList.add('hieu-button');
-                let buttonTextForLabel = hieuMsg.text.replace(/\*.*?\*/g, "").trim();
-                if (hieuMsg.image) buttonTextForLabel += " (có hình ảnh)";
-                if (hieuMsg.video) buttonTextForLabel += " (có video)";
-                button.setAttribute('aria-label', `Lựa chọn của Hiếu: ${buttonTextForLabel || 'Tiếp tục'}`);
+function addRow(p, dir, node, sender){
+  const box=containers[p];
+  const row=document.createElement("div");
+  row.className="row "+dir;
+  if (dir==="in"){
+    const side=document.createElement("div");
+    side.className="side";
+    row.appendChild(side);
+  }
+  row.appendChild(node);
+  // grouping: adjust the previous bubble of the same run
+  if (lastSender[p]===sender && lastRow[p]){
+    const prev=lastRow[p];
+    if (prev.classList.contains("g-last")){ prev.classList.replace("g-last","g-mid"); }
+    else { prev.classList.add("g-first"); }
+    row.classList.add("g-last");
+    if (dir==="in"){ const pa=prev.querySelector(".side img"); if(pa) pa.remove(); }
+  }
+  if (dir==="in"){
+    const img=document.createElement("img");
+    img.src=partnerAva(p); img.alt="";
+    row.querySelector(".side").appendChild(img);
+  }
+  lastSender[p]=sender; lastRow[p]=row;
+  box.appendChild(row);
+  scrollDown();
+  return row;
+}
 
-                let buttonContent = formatText(hieuMsg.text);
-                if (hieuMsg.image) buttonContent += `<br><img src="${hieuMsg.image}" alt="xem trước hình ảnh" style="max-height: 50px; border-radius: 4px; margin-top: 4px;" loading="lazy" onerror="this.style.display='none'">`;
-                if (hieuMsg.video) buttonContent += `<br><span style="font-size:0.8em; color:#eee;">(Video kèm theo)</span>`;
-                button.innerHTML = buttonContent || 'Tiếp tục';
-                button.onclick = () => {
-                    hieuActionsDiv.querySelectorAll('.hieu-button').forEach(b => b.disabled = true);
-                    displayMessage(hieuMsg); hieuMessageQueue.shift();
-                    setTimeout(() => {
-                        if (hieuMessageQueue.length > 0) renderHieuButtons();
-                        else { hieuActionsDiv.innerHTML = ''; processNextMessage(); }
-                    }, HIEU_POST_MESSAGE_DELAY);
-                };
-                hieuActionsDiv.appendChild(button);
-            } else processNextMessage();
-        }
+function buildBubble(ev){
+  const b=document.createElement("div");
+  b.className="bubble";
+  if (ev.text){
+    const span=document.createElement("span");
+    span.innerHTML=fmt(ev.text);
+    b.appendChild(span);
+  }
+  if (ev.img){
+    const im=document.createElement("img");
+    im.className="media"; im.src=ev.img; im.loading="lazy";
+    im.alt = ev.text ? plain(ev.text) : "Hình trong đoạn chat";
+    im.addEventListener("load", scrollDown);
+    im.addEventListener("click", ()=>{ lightboxImg.src=ev.img; lightbox.classList.add("show"); });
+    b.appendChild(im);
+    if(!ev.text) b.classList.add("media-only");
+  }
+  if (ev.video){
+    const v=document.createElement("video");
+    v.src=ev.video; v.controls=true; v.playsInline=true; v.preload="metadata";
+    v.addEventListener("loadedmetadata", scrollDown);
+    b.appendChild(v);
+  }
+  return b;
+}
 
-        function loadScene(sceneIndex) {
-            currentSceneIndex = sceneIndex; currentMessageInScene = 0; hieuMessageQueue = [];
-            manAvatarCurrent = MAN_AVATAR_DEFAULT;
-            hideTypingIndicator(); nextSceneButton.style.display = 'none';
-            replayButton.style.display = 'none';
-            chatMessagesDiv.innerHTML = ''; hieuActionsDiv.innerHTML = '';
-            updateSceneProgress();
+function attachReaction(row, emoji, run){
+  setTimeout(()=>{
+    if (run!==runToken) return;
+    row.classList.add("has-react");
+    const badge=document.createElement("span");
+    badge.className="react-badge"; badge.textContent=emoji;
+    row.querySelector(".bubble").appendChild(badge);
+    pop("recv");
+    scrollDown();
+  }, reducedMotion?0:650);
+}
 
-            if (currentSceneIndex >= scriptData.length) { showEnding(); return; }
-            const scene = scriptData[currentSceneIndex];
-            let headerText, headerAvatarSrc, headerAvatarAlt;
+function addCentered(p, cls, html){
+  const el=document.createElement("div");
+  el.className=cls; el.innerHTML=html;
+  containers[p].appendChild(el);
+  breakGrouping(p);
+  scrollDown();
+  return el;
+}
 
-            if (scene.sceneHasTiemCuonLen) {
-                headerText = "Tiệm Cuộn Len";
-                headerAvatarSrc = getAvatar("Tiệm Cuộn Len", true);
-                headerAvatarAlt = "Tiệm Cuộn Len Avatar";
-                chatContainer.classList.remove('theme-rose');
-            } else {
-                headerText = manNicknameGlobal;
-                headerAvatarSrc = getAvatar("Mẫn", true);
-                headerAvatarAlt = manNicknameGlobal + " Avatar";
-                chatContainer.classList.add('theme-rose');
-            }
-            if (scene.sceneSubTitle) headerText += ` ${scene.sceneSubTitle}`;
+/* typing indicator — built outside addRow so it never disturbs grouping */
+function showTyping(p){
+  const row=document.createElement("div");
+  row.className="row in typing";
+  row.innerHTML=`<div class="side"><img src="${partnerAva(p)}" alt=""></div>`+
+                `<div class="bubble"><s></s><s></s><s></s></div>`;
+  containers[p].appendChild(row);
+  scrollDown();
+  return row;
+}
 
-            headerNameSpan.textContent = headerText;
-            headerAvatarImg.src = headerAvatarSrc;
-            headerAvatarImg.alt = headerAvatarAlt;
-            headerAvatarImg.style.display = 'block';
+/* ================= Gates (user interaction points) ================= */
+let pillResolve=null;
+continuePill.addEventListener("click", ()=>{ if(pillResolve){const r=pillResolve;pillResolve=null;r();} });
+function waitPill(label){
+  continuePill.textContent=label||"Tiếp tục ▸";
+  continuePill.classList.remove("hidden");
+  return new Promise(res=>{ pillResolve=()=>{ continuePill.classList.add("hidden"); res(); }; });
+}
 
-            processNextMessage();
-        }
+let sendResolve=null;
+sendBtn.addEventListener("click", ()=>{
+  if (sendResolve){ const r=sendResolve; sendResolve=null; r(); }
+});
+function waitSend(){
+  sendBtn.disabled=false; sendBtn.classList.add("ready");
+  return new Promise(res=>{
+    sendResolve=()=>{ sendBtn.disabled=true; sendBtn.classList.remove("ready"); res(); };
+  });
+}
 
-        loadScene(0);
-    </script>
+/* ================= Event playback ================= */
+function typingTime(text){
+  return Math.max(650, Math.min(2400, (text?text.length:10)*34));
+}
+
+async function playIncoming(ev, run, isPayment){
+  await wait(380); if(run!==runToken) return;
+  const ind=showTyping(activePartner);
+  await wait(typingTime(ev.text)); if(run!==runToken){ind.remove();return;}
+  ind.remove();
+  let node;
+  if (isPayment){
+    node=document.createElement("div");
+    node.className="bubble media-only";
+    node.innerHTML=`<div class="pay-card"><div class="pay-top">💸 ${esc(partnerName(activePartner))} đã chuyển tiền</div><div class="pay-amount">${esc(ev.amount)}</div><div class="pay-note">${fmt(ev.note||"")} · qua Momo</div></div>`;
+  } else {
+    node=buildBubble(ev);
+  }
+  const row=addRow(activePartner,"in",node, isPayment?"__pay__":activePartner);
+  pop("recv");
+  if (ev.react) attachReaction(row, ev.react, run);
+}
+
+async function typeIntoComposer(text, run){
+  fakeInput.classList.add("typing-now");
+  inputText.textContent="";
+  const step=Math.max(12, Math.min(36, 950/Math.max(text.length,1)));
+  for (let i=0;i<text.length;i++){
+    if (run!==runToken) return;
+    if (fastForward) break;
+    inputText.textContent+=text[i];
+    await wait(step);
+  }
+  inputText.textContent=text;
+}
+
+function clearComposer(){
+  fakeInput.classList.remove("typing-now");
+  inputText.textContent="";
+  mediaChip.classList.remove("show");
+  mediaChip.innerHTML="";
+}
+
+async function playOutgoing(ev, run){
+  await wait(300); if(run!==runToken) return;
+  if (ev.img || ev.video){
+    mediaChip.innerHTML = ev.img
+      ? `<img src="${ev.img}" alt=""> Đính kèm 1 ảnh 📷`
+      : `🎬 Đính kèm 1 video`;
+    mediaChip.classList.add("show");
+  }
+  await typeIntoComposer(plain(ev.text), run); if(run!==runToken) return;
+  await waitSend(); if(run!==runToken) return;
+  clearComposer();
+  const row=addRow(activePartner, "out", buildBubble(ev), "hieu");
+  pop("send");
+  if (ev.video){
+    const v=row.querySelector("video");
+    if (v){ v.muted=false; v.play().catch(()=>{}); }
+  }
+  if (ev.react) attachReaction(row, ev.react, run);
+}
+
+async function playEvent(ev, run){
+  fastForward=false;
+  switch(ev.t){
+    case "in":  await playIncoming(ev, run, false); break;
+    case "pay": await playIncoming(ev, run, true);  break;
+    case "out": await playOutgoing(ev, run); break;
+    case "sys":
+      await wait(600); if(run!==runToken) return;
+      addCentered(activePartner,"sys",fmt(ev.text));
+      break;
+    case "narr":
+      await wait(900); if(run!==runToken) return;
+      addCentered(activePartner,"narrator",fmt(ev.text));
+      break;
+    case "seen":{
+      await wait(1100); if(run!==runToken) return;
+      const el=document.createElement("div");
+      el.className="seen-row";
+      el.innerHTML=`<span>Đã xem</span><img src="${partnerAva(activePartner)}" alt="">`;
+      containers[activePartner].appendChild(el);
+      breakGrouping(activePartner);
+      scrollDown();
+      if (ev.text) addCentered(activePartner,"sys",fmt("*"+ev.text+"*"));
+      break;
+    }
+    case "nick":
+      await wait(700); if(run!==runToken) return;
+      nicknames[activePartner]=ev.name;
+      addCentered(activePartner,"sys","✏️ "+esc(ev.text));
+      applyHeader(activePartner, true);
+      break;
+    case "ava":
+      await wait(700); if(run!==runToken) return;
+      avatars[activePartner]=ev.img;
+      addCentered(activePartner,"sys",
+        `📷 ${esc(ev.text)}<img class="sys-ava" src="${ev.img}" alt="Ảnh đại diện mới">`);
+      applyHeader(activePartner, false);
+      break;
+  }
+}
+
+/* ================= Main story loop ================= */
+async function runStory(){
+  const run=++runToken;
+  for (let i=0;i<SCENES.length;i++){
+    const scene=SCENES[i];
+    if (i>0){
+      await wait(500); if(run!==runToken) return;
+      fastForward=false;
+      await waitPill("Tiếp tục ▸"); if(run!==runToken) return;
+    }
+    setProgress(i+1);
+    await switchConversation(scene.partner); if(run!==runToken) return;
+    addCentered(scene.partner,"divider",
+      `<b>Cảnh ${i+1}${scene.caption?" · "+esc(scene.caption):""}</b>`);
+    for (const ev of scene.events){
+      await playEvent(ev, run);
+      if (run!==runToken) return;
+    }
+  }
+  await wait(800); if(run!==runToken) return;
+  fastForward=false;
+  await waitPill("🎂 Bấm vô đây nè"); if(run!==runToken) return;
+  showEnd();
+}
+
+/* ================= Screens ================= */
+function showEnd(){
+  endScreen.classList.remove("gone");
+  chatScreen.classList.add("gone");
+  startConfetti();
+}
+
+function resetAll(){
+  runToken++;
+  nicknames={}; avatars={};
+  lastSender={man:null,shop:null}; lastRow={man:null,shop:null};
+  activePartner=null;
+  containers.man.innerHTML=""; containers.shop.innerHTML="";
+  containers.man.classList.remove("active"); containers.shop.classList.remove("active");
+  clearComposer();
+  continuePill.classList.add("hidden"); pillResolve=null;
+  sendBtn.disabled=true; sendBtn.classList.remove("ready"); sendResolve=null;
+  setProgress(0);
+  stopConfetti();
+}
+
+openBtn.addEventListener("click", ()=>{
+  pop("send"); // also warms up the AudioContext inside the user gesture
+  introScreen.classList.add("gone");
+  chatScreen.classList.remove("gone");
+  resetAll();
+  runStory();
+});
+
+replayBtn.addEventListener("click", ()=>{
+  endScreen.classList.add("gone");
+  chatScreen.classList.remove("gone");
+  resetAll();
+  runStory();
+});
+
+lightbox.addEventListener("click", ()=>lightbox.classList.remove("show"));
+
+/* ================= Confetti ================= */
+const canvas=$("confettiCanvas"), ctx=canvas.getContext("2d");
+let confettiOn=false, pieces=[];
+const COLORS=["#fff","#ffd166","#ff5e9c","#8ecae6","#b5e48c","#cdb4db"];
+function newPiece(burst){
+  return {
+    x:Math.random()*canvas.width,
+    y:burst? -20-Math.random()*canvas.height*.5 : -20,
+    w:6+Math.random()*7, h:8+Math.random()*10,
+    vy:1.6+Math.random()*2.6, vx:-1+Math.random()*2,
+    rot:Math.random()*Math.PI, vr:-.12+Math.random()*.24,
+    color:COLORS[Math.random()*COLORS.length|0],
+    emoji:Math.random()<.12 ? ["🎂","💖","🎈","✨"][Math.random()*4|0] : null,
+  };
+}
+function sizeCanvas(){
+  canvas.width=canvas.offsetWidth*devicePixelRatio;
+  canvas.height=canvas.offsetHeight*devicePixelRatio;
+}
+function startConfetti(){
+  if (reducedMotion) return;
+  sizeCanvas();
+  pieces=Array.from({length:140},()=>newPiece(true));
+  confettiOn=true;
+  requestAnimationFrame(tickConfetti);
+}
+function stopConfetti(){ confettiOn=false; pieces=[]; }
+function tickConfetti(){
+  if (!confettiOn) { ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for (const p of pieces){
+    p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
+    if (p.y>canvas.height+30){ Object.assign(p,newPiece(false)); }
+    ctx.save();
+    ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+    if (p.emoji){ ctx.font="18px serif"; ctx.fillText(p.emoji,-9,6); }
+    else { ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); }
+    ctx.restore();
+  }
+  requestAnimationFrame(tickConfetti);
+}
+addEventListener("resize", ()=>{ if(confettiOn) sizeCanvas(); });
+
+/* ================= Preload assets ================= */
+["images/HueMan.jpg","images/Hieu.jpg","images/shop.jpg","images/30092024.jpg",
+ "images/conmadom.jpg","images/conma1.jpg","images/conma2.jpg",
+ "images/hinh1.jpg","images/hinh2.jpg","images/hinh3.jpg","images/hinh4.jpg"
+].forEach(src=>{ const i=new Image(); i.src=src; });
+</script>
 </body>
 </html>
