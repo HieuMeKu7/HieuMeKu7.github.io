@@ -1,4 +1,8 @@
-/* MicroTranslate v2.1 hotfix: always resolve a numeric baserevid before publish. */
+/* MicroTranslate v2.2 hotfix.
+ * Final guard against invalid optional baserevid values.
+ */
+
+// Keep the target-language collision check, but do not invent a revision ID.
 async function recheckTarget(item) {
   const { dst } = languages();
   const api = cfg().api;
@@ -20,36 +24,23 @@ async function recheckTarget(item) {
     throw new Error(`Có người vừa thêm ${dst} rồi; không ghi đè.`);
   }
 
-  let revision = Number(entity.lastrevid);
-  if (Number.isInteger(revision) && revision > 0) return revision;
-
-  const queryParams = {
-    action: 'query',
-    prop: 'revisions',
-    rvprop: 'ids',
-    rvlimit: 1,
-    format: 'json',
-    formatversion: 2
-  };
-
-  if (entity.pageid) {
-    queryParams.pageids = entity.pageid;
-  } else if (item.kind === 'description') {
-    queryParams.titles = item.id;
-  } else {
-    queryParams.titles = 'File:' + item.title;
-  }
-
-  const revisionData = await publicGet(api, queryParams);
-  const pages = revisionData && revisionData.query && revisionData.query.pages
-    ? revisionData.query.pages
-    : [];
-  const page = Array.isArray(pages) ? pages[0] : Object.values(pages)[0];
-  revision = Number(page && page.revisions && page.revisions[0] && page.revisions[0].revid);
-
-  if (!Number.isInteger(revision) || revision <= 0) {
-    throw new Error('Không lấy được revision ID hiện tại; chưa đăng để tránh edit collision.');
-  }
-
-  return revision;
+  const revision = Number(entity.lastrevid);
+  return Number.isInteger(revision) && revision > 0 ? revision : null;
 }
+
+// app-main v2 can still pass baserevid:null/undefined. Strip it at the last
+// possible point before URLSearchParams serializes it into the literal string
+// "undefined". baserevid is optional in Wikibase edit modules.
+const mtOriginalAuthPostV22 = authPost;
+authPost = async function (api, params) {
+  const clean = Object.assign({}, params || {});
+  const revision = Number(clean.baserevid);
+
+  if (Number.isInteger(revision) && revision > 0) {
+    clean.baserevid = revision;
+  } else {
+    delete clean.baserevid;
+  }
+
+  return mtOriginalAuthPostV22(api, clean);
+};
