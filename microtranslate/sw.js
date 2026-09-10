@@ -1,11 +1,11 @@
-const CACHE = 'microtranslate-gh-v2.1';
+const CACHE = 'microtranslate-gh-v2.2';
 const SHELL = [
   './',
   './index.html',
   './styles.css',
   './app-core.js',
   './app-main.js',
-  './app-fix.js?v=2.1',
+  './app-fix.js?v=2.2',
   './manifest.webmanifest',
   './icon.svg'
 ];
