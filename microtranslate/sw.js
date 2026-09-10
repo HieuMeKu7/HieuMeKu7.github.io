@@ -1,5 +1,13 @@
-const CACHE = 'microtranslate-gh-v2';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
+const CACHE = 'microtranslate-gh-v2-split';
+const SHELL = [
+  './',
+  './index.html',
+  './styles.css',
+  './app-core.js',
+  './app-main.js',
+  './manifest.webmanifest',
+  './icon.svg'
+];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)));
