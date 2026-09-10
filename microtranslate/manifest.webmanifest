@@ -1,0 +1,18 @@
+{
+  "name": "MicroTranslate",
+  "short_name": "µTranslate",
+  "description": "Wikimedia micro-translation tool for Wikidata descriptions and Commons captions.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
