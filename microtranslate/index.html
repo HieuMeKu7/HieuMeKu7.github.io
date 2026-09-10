@@ -28,14 +28,10 @@
 
     <div style="margin-top:10px">
       <label for="token">OAuth 2 owner-only access token</label>
-      <input id="token" type="password" autocomplete="off" spellcheck="false"
-             placeholder="Paste access token ở đây">
-      <div class="small" style="margin-top:6px">
-        Mặc định token chỉ nằm trong RAM. Tick “Nhớ token trên thiết bị này” nếu muốn mở app lần sau khỏi paste lại.
-      </div>
+      <input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="Paste access token ở đây">
+      <div class="small" style="margin-top:6px">Mặc định token chỉ nằm trong RAM. Tick “Nhớ token trên thiết bị này” nếu muốn mở app lần sau khỏi paste lại.</div>
       <label style="margin-top:9px;display:flex;gap:8px;align-items:center;font-size:13px">
-        <input id="remember-token" type="checkbox" style="width:auto">
-        Nhớ token trên thiết bị này
+        <input id="remember-token" type="checkbox" style="width:auto"> Nhớ token trên thiết bị này
       </label>
     </div>
 
@@ -43,15 +39,11 @@
       <button id="test-auth" type="button" class="primary">Test token</button>
       <button id="clear-token" type="button" class="danger">Xóa token</button>
     </div>
-
-    <div id="auth-status" class="status">
-      Paste access token rồi bấm “Test token”.
-    </div>
+    <div id="auth-status" class="status">Paste access token rồi bấm “Test token”.</div>
   </section>
 
   <section class="card">
     <strong>Task</strong>
-
     <div style="margin-top:10px">
       <label for="mode">Loại micro-edit</label>
       <select id="mode">
@@ -61,24 +53,13 @@
     </div>
 
     <div class="grid" style="margin-top:10px">
-      <div>
-        <label for="src">Nguồn</label>
-        <input id="src" value="en" maxlength="15" autocapitalize="none" spellcheck="false">
-      </div>
+      <div><label for="src">Nguồn</label><input id="src" value="en" maxlength="15" autocapitalize="none" spellcheck="false"></div>
       <div style="padding-bottom:10px;text-align:center">→</div>
-      <div>
-        <label for="dst">Đích</label>
-        <input id="dst" value="vi" maxlength="15" autocapitalize="none" spellcheck="false">
-      </div>
+      <div><label for="dst">Đích</label><input id="dst" value="vi" maxlength="15" autocapitalize="none" spellcheck="false"></div>
     </div>
 
-    <div class="row" style="margin-top:10px">
-      <button id="next" type="button">Next</button>
-    </div>
-
-    <div id="empty" class="small" style="padding:18px 0;text-align:center">
-      Bấm <b>Next</b> để lấy task.
-    </div>
+    <div class="row" style="margin-top:10px"><button id="next" type="button">Next</button></div>
+    <div id="empty" class="small" style="padding:18px 0;text-align:center">Bấm <b>Next</b> để lấy task.</div>
 
     <div id="task" class="hidden" style="margin-top:12px">
       <div id="kind" class="kind"></div>
@@ -86,15 +67,10 @@
       <img id="image" class="preview hidden" alt="">
       <div id="source" class="source"></div>
       <div id="links" class="links"></div>
-
       <label for="answer">Bản dịch</label>
       <textarea id="answer" maxlength="250" placeholder="Nhập bản dịch ngắn…"></textarea>
       <div id="count" class="counter">0 / 250</div>
-
-      <div class="actions">
-        <button id="skip" type="button">Bỏ qua</button>
-        <button id="publish" type="button" class="primary">Đăng & tiếp</button>
-      </div>
+      <div class="actions"><button id="skip" type="button">Bỏ qua</button><button id="publish" type="button" class="primary">Đăng & tiếp</button></div>
     </div>
 
     <div id="task-status" class="status">Sẵn sàng.</div>
@@ -103,22 +79,16 @@
 
   <details class="card">
     <summary>GitHub Pages / bảo mật token</summary>
-    <div class="small" style="margin-top:8px">
-      Trang này là static HTML, không chứa token trong source code. Nếu bật “Nhớ token”,
-      access token chỉ được lưu trong <code>localStorage</code> của origin GitHub Pages này
-      trên thiết bị hiện tại. Đừng commit token/client secret vào repository.
-      Wikimedia Action API được gọi bằng <code>crossorigin=</code> + OAuth Bearer token.
-    </div>
+    <div class="small" style="margin-top:8px">Trang này là static HTML, không chứa token trong source code. Nếu bật “Nhớ token”, access token chỉ được lưu trong <code>localStorage</code> của origin GitHub Pages này trên thiết bị hiện tại. Đừng commit token/client secret vào repository. Wikimedia Action API được gọi bằng <code>crossorigin=</code> + OAuth Bearer token.</div>
   </details>
 </main>
 
-<script src="./app.js" defer></script>
+<script src="./app-core.js" defer></script>
+<script src="./app-main.js" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js').catch(function (err) {
-      console.error('Service worker:', err);
-    });
+    navigator.serviceWorker.register('./sw.js').catch(function (err) { console.error('Service worker:', err); });
   });
 }
 </script>
